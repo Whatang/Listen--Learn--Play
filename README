@@ -1,0 +1,47 @@
+Listen, Learn, Play is a lightweight music player intended for use by
+musicians to help them learn how to play a piece of music, or to assist with
+transcription.
+
+Vision
+======
+
+When trying to learn a piece of music, it is often necessary to repeat the
+same passage multiple times. Many software and hardware music players make this 
+operation possible, but to do so is fiddly and involved, making life difficult
+for a musician holding an instrument.
+
+LLP is designed to make it easy to navigate around a piece of music, to repeat 
+passages, or jump to important points. This can be achieved through using the
+keyboard, or by using a MIDI input device. The many cheap MIDI control surfaces 
+available make controlling playback simple and convenient for a musician using
+an instrument.
+
+Status
+======
+
+LLP currently exists only in my head!
+
+About
+=====
+
+I'm a drummer. I got frustrated with having to put the sticks down and fiddle 
+with my ipod every 10 seconds when trying to learn a difficult fill.
+
+Licensing
+=========
+
+ Listen, Learn, Play - a musicians' music player.
+    Copyright (C) 2012 Michael Thomas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
