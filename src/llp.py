@@ -22,11 +22,12 @@ Created on 26 Jan 2012
 
 import sys
 import os
-from PyQt4.QtGui import QApplication, QMainWindow, QDesktopServices, QFileDialog, QIcon, QPixmap
+from PyQt4.QtGui import QApplication, QMainWindow, QDesktopServices, QFileDialog, QIcon, QPixmap, QTransform
 from PyQt4.QtCore import pyqtSignature, QTimer
 from PyQt4.phonon import Phonon
 sys.path.append("Images")
 from ui_llp import Ui_MainWindow
+from MarkedScene import MarkedScene
 
 WINDOW_TITLE = "Listen, Learn, Play"
 TICK_INTERVAL = 10
@@ -45,17 +46,25 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._oldMs = 0
         self._rewinding = None
         self._forwarding = None
+        self._wasPlaying = False
+        self._scene = MarkedScene(self)
         self._media = Phonon.MediaObject(self)
         self._media.totalTimeChanged.connect(self._totalChanged)
         self._media.stateChanged.connect(self._mediaStateChanged)
         self._media.setTickInterval(TICK_INTERVAL)
+        self._media.metaDataChanged.connect(self.printMeta)
         self._audio = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self._media.tick.connect(self._tick)
         Phonon.createPath(self._media, self._audio)
         self.seekSlider.setMediaObject(self._media)
         self.volumeSlider.setAudioOutput(self._audio)
+        self.markView.setScene(self._scene)
         self._tick(0)
         self._checkButtons()
+
+    def printMeta(self):
+        for k, v in self._media.metaData().iteritems():
+            print str(k), str(v)
 
     @pyqtSignature("")
     def on_actionOpen_triggered(self):
@@ -73,6 +82,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             return
         self._filename = str(fname)
         self._media.setCurrentSource(Phonon.MediaSource(fname))
+        self._media.pause() # Makes sure tick signals are emitted
         base = os.path.splitext(os.path.basename(self._filename))[0]
         self.setWindowTitle(WINDOW_TITLE + " - " + base)
 
@@ -83,8 +93,10 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         elif self._media.state() in (Phonon.PausedState, Phonon.StoppedState):
             self._media.play()
 
-    def _mediaStateChanged(self, newState, unusedOldState):
+    def _mediaStateChanged(self, newState):
         self._checkButtons(newState)
+        if newState == Phonon.ErrorState:
+            self._totalChanged(0)
 
     def _checkButtons(self, state = None, ms = None):
         if state is None:
@@ -99,7 +111,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self.forwardButton.setEnabled(False)
             self.endButton.setEnabled(False)
         else:
-            if state == Phonon.PlayingState:
+            if state == Phonon.PlayingState or ((self._rewinding or self._forwarding) and self._wasPlaying):
                 self.playButton.setIcon(self.PAUSE_ICON)
             else:
                 self.playButton.setIcon(self.PLAY_ICON)
@@ -128,6 +140,8 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._rewinding = QTimer(self)
         self._rewinding.setInterval(TICK_INTERVAL)
         self._rewinding.timeout.connect(self._rewinder)
+        self._wasPlaying = (self._media.state() == Phonon.PlayingState)
+        self._media.pause()
         self._rewinding.start()
 
     def _rewinder(self):
@@ -139,13 +153,19 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         if self._rewinding:
             self._rewinding.stop()
         self._rewinding = None
+        if self._wasPlaying:
+            self._media.play()
+
 
     @pyqtSignature("")
     def on_forwardButton_pressed(self):
         self._forwarding = QTimer(self)
         self._forwarding.setInterval(TICK_INTERVAL)
         self._forwarding.timeout.connect(self._forwarder)
+        self._wasPlaying = (self._media.state() == Phonon.PlayingState)
+        self._media.pause()
         self._forwarding.start()
+
 
     def _forwarder(self):
         newPos = min(self._total, self._oldMs + SPOOL_INTERVAL)
@@ -156,6 +176,8 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         if self._forwarding:
             self._forwarding.stop()
         self._forwarding = None
+        if self._wasPlaying:
+            self._media.play()
 
 
 
@@ -168,12 +190,27 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         if ms < self._oldMs or ms == self._total or self._oldMs == 0:
             self._checkButtons(ms = ms)
         self._oldMs = ms
+        self._scene.setCurrent(ms)
 
 
     def _totalChanged(self, total):
         self._total = total
-        self.totalLabel.setText("%.2f" % (total / 1000.0))
-        self._tick(self._media.currentTime())
+        if total > 0:
+            self.markView.setEnabled(True)
+            self.totalLabel.setText("%.2f" % (total / 1000.0))
+            self._scene.setTotal(total)
+            self._tick(self._media.currentTime())
+            self.markView.setSceneRect(self._scene.sceneRect())
+            self.markView.setTransform(QTransform(float(self.markView.width()) / self._scene.width(),
+                                                  0, 0, 0, 1, 0, 0, 0, 1))
+        else:
+            self.totalLabel.setText("--")
+            self._scene.setTotal(total)
+            self._tick(0)
+            self.markView.setSceneRect(0, 0, 0, 0)
+            self.markView.setEnabled(False)
+
+
 
 def main():
     app = QApplication(sys.argv)
