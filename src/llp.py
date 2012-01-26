@@ -22,10 +22,10 @@ Created on 26 Jan 2012
 
 import sys
 import os
-from PyQt4.QtGui import QApplication, QMainWindow, QDesktopServices, QFileDialog
+from PyQt4.QtGui import QApplication, QMainWindow, QDesktopServices, QFileDialog, QIcon, QPixmap
 from PyQt4.QtCore import pyqtSignature, QTimer
 from PyQt4.phonon import Phonon
-
+sys.path.append("Images")
 from ui_llp import Ui_MainWindow
 
 WINDOW_TITLE = "Listen, Learn, Play"
@@ -36,6 +36,10 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent = None):
         super(LlpMainWindow, self).__init__(parent)
         self.setupUi(self)
+        self.PLAY_ICON = QIcon()
+        self.PAUSE_ICON = QIcon()
+        self.PLAY_ICON.addPixmap(QPixmap(":/Images/Play"))
+        self.PAUSE_ICON.addPixmap(QPixmap(":/Images/Pause"))
         self._filename = None
         self._total = 0
         self._oldMs = 0
@@ -96,9 +100,9 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self.endButton.setEnabled(False)
         else:
             if state == Phonon.PlayingState:
-                self.playButton.setText("Pause")
+                self.playButton.setIcon(self.PAUSE_ICON)
             else:
-                self.playButton.setText("Play")
+                self.playButton.setIcon(self.PLAY_ICON)
             beforeEnd = (ms < self._total)
             self.playButton.setEnabled(beforeEnd)
             self.endButton.setEnabled(beforeEnd)

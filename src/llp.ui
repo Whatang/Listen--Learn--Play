@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
-    <height>97</height>
+    <width>345</width>
+    <height>110</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,13 +19,6 @@
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QPushButton" name="openButton">
-          <property name="text">
-           <string>Open</string>
-          </property>
-         </widget>
-        </item>
         <item>
          <widget class="Phonon::SeekSlider" name="seekSlider">
           <property name="iconVisible">
@@ -59,37 +52,122 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QPushButton" name="startButton">
+         <widget class="QPushButton" name="openButton">
+          <property name="toolTip">
+           <string>Open a new music file</string>
+          </property>
           <property name="text">
-           <string>Start</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="Images/llp.qrc">
+            <normaloff>:/Images/Open</normaloff>:/Images/Open</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="startButton">
+          <property name="toolTip">
+           <string>To Start</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="Images/llp.qrc">
+            <normaloff>:/Images/Start</normaloff>:/Images/Start</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="rewindButton">
-          <property name="text">
+          <property name="toolTip">
            <string>Rewind</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="Images/llp.qrc">
+            <normaloff>:/Images/Rewind</normaloff>:/Images/Rewind</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="playButton">
-          <property name="text">
+          <property name="toolTip">
            <string>Play</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="Images/llp.qrc">
+            <normaloff>:/Images/Play</normaloff>:/Images/Play</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="forwardButton">
-          <property name="text">
+          <property name="toolTip">
            <string>Fast Forward</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="Images/llp.qrc">
+            <normaloff>:/Images/Forward</normaloff>:/Images/Forward</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="endButton">
+          <property name="toolTip">
+           <string>To End</string>
+          </property>
           <property name="text">
-           <string>End</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="Images/llp.qrc">
+            <normaloff>:/Images/End</normaloff>:/Images/End</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -114,7 +192,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>450</width>
+     <width>345</width>
      <height>21</height>
     </rect>
    </property>
@@ -150,7 +228,9 @@
    <header location="global">phonon/volumeslider.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="Images/llp.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>openButton</sender>

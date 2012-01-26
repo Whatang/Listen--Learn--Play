@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="Images">
+    <file alias="Open">media-eject.png</file>
+    <file alias="Pause">media-playback-pause.png</file>
+    <file alias="Play">media-playback-start.png</file>
+    <file alias="Rewind">media-seek-backward.png</file>
+    <file alias="Forward">media-seek-forward.png</file>
+    <file alias="Start">media-skip-backward.png</file>
+    <file alias="End">media-skip-forward.png</file>
+  </qresource>
+</RCC>
