@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\LLP\src\llp.ui'
 #
-# Created: Fri Jan 27 10:56:26 2012
+# Created: Fri Jan 27 11:28:13 2012
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -111,7 +111,7 @@ class Ui_MainWindow(object):
         self.markView.setMinimumSize(QtCore.QSize(394, 104))
         self.markView.setMaximumSize(QtCore.QSize(394, 104))
         self.markView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.markView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.markView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.markView.setObjectName(_fromUtf8("markView"))
         self.verticalLayout_3.addWidget(self.markView)
         self.horizontalLayout = QtGui.QHBoxLayout()

@@ -242,8 +242,9 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self._scene.setTotal(total)
             self._tick(self._media.currentTime())
             self.markView.setSceneRect(self._scene.sceneRect())
-            sx = float(self.markView.width()) / self._scene.width()
-            height = self.markView.height()
+            print self._scene.sceneRect()
+            sx = float(self.markView.width() - 3) / self._scene.width()
+            height = self.markView.height() - 3
             for scrollBar in self.markView.scrollBarWidgets(Qt.AlignBottom | Qt.AlignTop):
                 height -= scrollBar.height()
             sy = float(height) / self._scene.height()

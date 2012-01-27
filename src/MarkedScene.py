@@ -59,9 +59,9 @@ class MarkedScene(QGraphicsScene):
         self._currentMarker.setX(ms)
 
     def setTotal(self, total):
-        self.setSceneRect(0, 0, total + 1, 100)
+        self.setSceneRect(0, 0, total, 100)
         self._currentMarker.setVisible(total > 0)
-        self._flasher.setRect(0, 0, total + 1, 100)
+        self._flasher.setRect(0, 0, total, 100)
         self._total = total
 
     def _setBegin(self, position):

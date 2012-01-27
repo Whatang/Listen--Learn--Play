@@ -260,7 +260,7 @@ p, li { white-space: pre-wrap; }
          <enum>Qt::ScrollBarAlwaysOff</enum>
         </property>
         <property name="horizontalScrollBarPolicy">
-         <enum>Qt::ScrollBarAlwaysOff</enum>
+         <enum>Qt::ScrollBarAsNeeded</enum>
         </property>
        </widget>
       </item>
