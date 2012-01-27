@@ -19,7 +19,13 @@ an instrument.
 Status
 ======
 
-LLP currently exists only in my head!
+LLP is now a working audio player, with the functionality required to play
+back music under the user's control. All the basic operations that are needed
+to make it easy to practice a piece of music repeatedly are accessible with
+the mouse and with keyboard shortcuts.
+
+The next step is to add MIDI control so that a control surface can be used to
+give the user convenient access to the functionality of LLP.   
 
 About
 =====
