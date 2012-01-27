@@ -31,7 +31,10 @@ About
 =====
 
 I'm a drummer. I got frustrated with having to put the sticks down and fiddle 
-with my ipod every 10 seconds when trying to learn a difficult fill.
+with my ipod every 10 seconds when trying to learn difficult fills.
+
+LLP is written in Python using PyQt4 and Phonon to provide the graphical and
+audio capabilities.
 
 Licensing
 =========
