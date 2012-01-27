@@ -55,6 +55,8 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._media.metaDataChanged.connect(self.printMeta)
         self._audio = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self._media.tick.connect(self._tick)
+        self._media.prefinishMarkReached.connect(self._prefinish)
+        self._media.finished.connect(self._finish)
         Phonon.createPath(self._media, self._audio)
         self.seekSlider.setMediaObject(self._media)
         self.volumeSlider.setAudioOutput(self._audio)
@@ -82,6 +84,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             return
         self._filename = str(fname)
         self._media.setCurrentSource(Phonon.MediaSource(fname))
+        self._scene.newSong()
         self._media.pause() # Makes sure tick signals are emitted
         base = os.path.splitext(os.path.basename(self._filename))[0]
         self.setWindowTitle(WINDOW_TITLE + " - " + base)
@@ -105,16 +108,23 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             ms = self._media.currentTime()
         if state in (Phonon.LoadingState, Phonon.BufferingState,
                      Phonon.ErrorState):
-            self.startButton.setEnabled(False)
-            self.rewindButton.setEnabled(False)
-            self.playButton.setEnabled(False)
-            self.forwardButton.setEnabled(False)
-            self.endButton.setEnabled(False)
+            self.controlsFrame.setEnabled(False)
+            self.markFrame.setEnabled(False)
+            self.rightFrame.setEnabled(False)
         else:
+            self.controlsFrame.setEnabled(True)
+            self.markFrame.setEnabled(True)
+            self.rightFrame.setEnabled(True)
             if state == Phonon.PlayingState or ((self._rewinding or self._forwarding) and self._wasPlaying):
                 self.playButton.setIcon(self.PAUSE_ICON)
+                self.countButton.setEnabled(False)
+                self.selectionButton.setEnabled(False)
+                self.loopButton.setEnabled(False)
             else:
                 self.playButton.setIcon(self.PLAY_ICON)
+                self.countButton.setEnabled(True)
+                self.selectionButton.setEnabled(True)
+                self.loopButton.setEnabled(True)
             beforeEnd = (ms < self._total)
             self.playButton.setEnabled(beforeEnd)
             self.endButton.setEnabled(beforeEnd)
@@ -129,11 +139,17 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSignature("")
     def on_startButton_clicked(self):
-        self._media.seek(0)
+        if self.selectionButton.isChecked() and self._scene.begin is not None:
+            self._media.seek(self._scene.begin)
+        else:
+            self._media.seek(0)
 
     @pyqtSignature("")
     def on_endButton_clicked(self):
-        self._media.seek(self._total)
+        if self.selectionButton.isChecked() and self._scene.end is not None:
+            self._media.seek(self._scene.end)
+        else:
+            self._media.seek(self._total)
 
     @pyqtSignature("")
     def on_rewindButton_pressed(self):
@@ -197,6 +213,9 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._total = total
         if total > 0:
             self.markView.setEnabled(True)
+            self.controlsFrame.setEnabled(True)
+            self.markFrame.setEnabled(True)
+            self.rightFrame.setEnabled(True)
             self.totalLabel.setText("%.2f" % (total / 1000.0))
             self._scene.setTotal(total)
             self._tick(self._media.currentTime())
@@ -209,8 +228,59 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self._tick(0)
             self.markView.setSceneRect(0, 0, 0, 0)
             self.markView.setEnabled(False)
+            self.controlsFrame.setEnabled(False)
+            self.markFrame.setEnabled(False)
+            self.rightFrame.setEnabled(False)
 
+    @pyqtSignature("")
+    def on_setBeginButton_clicked(self):
+        self._scene.begin = self._oldMs
 
+    @pyqtSignature("")
+    def on_setEndButton_clicked(self):
+        self._scene.end = self._oldMs
+        self._media.setPrefinishMark(self._total - self._oldMs)
+
+    @pyqtSignature("")
+    def on_markButton_clicked(self):
+        self._scene.toggleMark(self._oldMs)
+
+    @pyqtSignature("")
+    def on_nextMarkButton_clicked(self):
+        mark = self._scene.getNextMark(self._oldMs)
+        self._media.seek(mark)
+
+    @pyqtSignature("")
+    def on_prevMarkButton_clicked(self):
+        mark = self._scene.getPreviousMark(self._oldMs)
+        self._media.seek(mark)
+
+    def _prefinish(self):
+        if self.selectionButton.isChecked():
+            self._media.pause()
+            if self.loopButton.isChecked():
+                self._media.seek(self._scene.begin)
+                self._media.play()
+
+    def _finish(self):
+        if self.loopButton.isChecked() and not self.selectionButton.isChecked():
+            self._media.pause()
+            self._media.seek(0)
+            self._media.play()
+
+    @pyqtSignature("bool")
+    def on_selectionButton_toggled(self, onOff):
+        if onOff:
+            self.selectionButton.setText("Selection")
+        else:
+            self.selectionButton.setText("Song")
+
+    @pyqtSignature("bool")
+    def on_loopButton_toggled(self, onOff):
+        if onOff:
+            self.loopButton.setText("Loop")
+        else:
+            self.loopButton.setText("Once")
 
 def main():
     app = QApplication(sys.argv)
