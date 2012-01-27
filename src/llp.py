@@ -31,7 +31,7 @@ from ui_llp import Ui_MainWindow
 from MarkedScene import MarkedScene
 
 WINDOW_TITLE = "Listen, Learn, Play"
-TICK_INTERVAL = 10
+TICK_INTERVAL = 25
 SPOOL_INTERVAL = 1
 MIN_ZOOM = 1
 MAX_ZOOM = 16
@@ -86,7 +86,8 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
                          self.actionZoomIn, self.actionZoomOut,
                          self.actionPageDown, self.actionPageUp,
                          self.actionSetBegin, self.actionSetBegin_2,
-                         self.actionSetEnd, self.actionSetEnd_2])
+                         self.actionSetEnd, self.actionSetEnd_2,
+                         self.actionTrack])
 
     def printMeta(self):
         for k, v in self._media.metaData().iteritems():
@@ -246,6 +247,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self._checkButtons(ms = ms)
         self._oldMs = ms
         self._scene.setCurrent(ms)
+        self._doTracking()
 
     def setCurrent(self, ms):
         self._media.seek(ms)
@@ -348,6 +350,12 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self.loopButton.toggle()
 
     @pyqtSignature("")
+    def on_actionTrack_triggered(self):
+        if self.trackButton.isEnabled():
+            self.trackButton.toggle()
+            self._doTracking()
+
+    @pyqtSignature("")
     def on_actionCountIn_triggered(self):
         if not self.countButton.isEnabled():
             return
@@ -403,6 +411,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self._scene.setZoom(zoom)
         self.setSpool()
         self._checkZoomButtons()
+        self._doTracking()
 
     def setSpool(self):
         if self._total > 0:
@@ -431,6 +440,8 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
     def _checkZoomButtons(self):
         self.zoomInButton.setEnabled(self._zoom < MAX_ZOOM)
         self.zoomOutButton.setEnabled(self._zoom > MIN_ZOOM)
+        self.trackButton.setDisabled(self._zoom == 1)
+
 
     @pyqtSignature("")
     def on_actionPageUp_triggered(self):
@@ -441,6 +452,10 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
     def on_actionPageDown_triggered(self):
         if self.viewFrame.isEnabled() and self._zoom != 1:
             self._hsc.triggerAction(self._hsc.SliderPageStepAdd)
+
+    def _doTracking(self):
+        if self.trackButton.isEnabled() and self.trackButton.isChecked():
+            self.markView.centerOn(self._oldMs, 0)
 
 def main():
     import ctypes

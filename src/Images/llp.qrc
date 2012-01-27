@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="Images">
+    <file alias="Link">plug-connect.png</file>
+    <file alias="Unlink">plug-disconnect.png</file>
     <file alias="LLP">ear-listen-large.png</file>
     <file alias="NextMark">arrow-curve-000-left.png</file>
     <file alias="PreviousMark">arrow-curve-180-left.png</file>
