@@ -46,6 +46,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self.pauseIcon.addPixmap(QPixmap(":/Images/Pause"))
         self._filename = None
         self._total = 0
+        self._numDps = 1
         self._oldMs = 0
         self._beatsLeft = 0
         self._beatTimer = None
@@ -240,7 +241,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         if self._total == 0:
             self.positionIndicator.setText("--")
         else:
-            self.positionIndicator.setText("%.2f" % seconds)
+            self.positionIndicator.setText("%0*.2f" % (self._numDps, seconds))
         if ms < self._oldMs or ms == self._total or self._oldMs == 0:
             self._checkButtons(ms = ms)
         self._oldMs = ms
@@ -255,6 +256,11 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self.centerFrame.setEnabled(True)
             self.controlsFrame.setEnabled(True)
             self.countFrame.setEnabled(True)
+            self._numDps = 1
+            tens = 10
+            while tens <= total:
+                self._numDps += 1
+                tens *= 10
             self.totalLabel.setText("%.2f" % (total / 1000.0))
             self._scene.setTotal(total)
             self._tick(self._media.currentTime())
@@ -331,24 +337,10 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self._media.seek(0)
             self._media.play()
 
-    @pyqtSignature("bool")
-    def on_selectionButton_toggled(self, onOff):
-        if onOff:
-            self.selectionButton.setText("Selection")
-        else:
-            self.selectionButton.setText("Song")
-
     @pyqtSignature("")
     def on_actionSelection_triggered(self):
         if self.selectionButton.isEnabled():
             self.selectionButton.toggle()
-
-    @pyqtSignature("bool")
-    def on_loopButton_toggled(self, onOff):
-        if onOff:
-            self.loopButton.setText("Loop")
-        else:
-            self.loopButton.setText("Once")
 
     @pyqtSignature("")
     def on_actionLoop_triggered(self):
