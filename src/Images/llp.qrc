@@ -1,6 +1,8 @@
 <RCC>
   <qresource prefix="Images">
     <file alias="LLP">ear-listen-large.png</file>
+    <file alias="NextMark">arrow-curve-000-left.png</file>
+    <file alias="PreviousMark">arrow-curve-180-left.png</file>
     <file alias="Count In">clock--arrow.png</file>
     <file alias="SetBegin">fill-medium.png</file>
     <file alias="SetEnd">fill-medium-180.png</file>
@@ -18,17 +20,5 @@
     <file alias="Open">control-eject.png</file>
     <file alias="Pause">control-pause.png</file>
     <file alias="Once">arrow-repeat-once.png</file>
-    <file alias="NextMark">go-down.png</file>
-    <file alias="PreviousMark">go-up.png</file>
-    <file>list-add.png</file>
-    <file>list-remove.png</file>
-    <file>go-previous.png</file>
-    <file>media-eject.png</file>
-    <file>media-playback-pause.png</file>
-    <file>media-playback-start.png</file>
-    <file>media-seek-backward.png</file>
-    <file>media-seek-forward.png</file>
-    <file>media-skip-backward.png</file>
-    <file>media-skip-forward.png</file>
   </qresource>
 </RCC>
