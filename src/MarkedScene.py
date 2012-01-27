@@ -5,8 +5,8 @@ Created on 26 Jan 2012
 
 '''
 
-from PyQt4.QtGui import QGraphicsScene, QGraphicsLineItem, QPen, QBrush
-from PyQt4.Qt import Qt
+from PyQt4.QtGui import QGraphicsScene, QPen, QBrush
+from PyQt4.Qt import Qt, QTimer
 
 class MarkedScene(QGraphicsScene):
     '''
@@ -27,6 +27,10 @@ class MarkedScene(QGraphicsScene):
         self._selection = None
         self._total = 0
         self.setSceneRect(0, 0, 0, 100)
+        self._flasher = self.addRect(0, 0, 0, 0, pen = Qt.blue, brush = Qt.blue)
+        self._flasher.setVisible(False)
+        self._flasher.setOpacity(0.5)
+
 
     def newSong(self):
         self._marks = []
@@ -42,6 +46,7 @@ class MarkedScene(QGraphicsScene):
     def setTotal(self, total):
         self.setSceneRect(0, 0, total + 1, 100)
         self._currentMarker.setVisible(total > 0)
+        self._flasher.setRect(0, 0, total + 1, 100)
         self._total = total
 
     def _setBegin(self, position):
@@ -129,5 +134,8 @@ class MarkedScene(QGraphicsScene):
         else:
             self._addMark(len(self._marks), position)
 
+    def flash(self):
+        self._flasher.setVisible(True)
+        QTimer.singleShot(100, lambda : self._flasher.setVisible(False))
 
 

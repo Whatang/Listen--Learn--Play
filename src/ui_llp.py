@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\LLP\src\llp.ui'
 #
-# Created: Thu Jan 26 20:49:05 2012
+# Created: Thu Jan 26 21:24:19 2012
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -317,7 +317,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addWidget(self.label)
         self.bpmBox = QtGui.QSpinBox(self.rightFrame)
         self.bpmBox.setMaximumSize(QtCore.QSize(65, 20))
-        self.bpmBox.setMinimum(1)
+        self.bpmBox.setMinimum(60)
         self.bpmBox.setMaximum(300)
         self.bpmBox.setProperty(_fromUtf8("value"), 120)
         self.bpmBox.setObjectName(_fromUtf8("bpmBox"))
@@ -357,7 +357,7 @@ class Ui_MainWindow(object):
         self.setEndButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Set the end of the selection", None, QtGui.QApplication.UnicodeUTF8))
         self.setEndButton.setText(QtGui.QApplication.translate("MainWindow", "End", None, QtGui.QApplication.UnicodeUTF8))
         self.loopButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Repeat endlessly", None, QtGui.QApplication.UnicodeUTF8))
-        self.loopButton.setText(QtGui.QApplication.translate("MainWindow", "Loop", None, QtGui.QApplication.UnicodeUTF8))
+        self.loopButton.setText(QtGui.QApplication.translate("MainWindow", "Once", None, QtGui.QApplication.UnicodeUTF8))
         self.selectionButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Switch between playing song and selection", None, QtGui.QApplication.UnicodeUTF8))
         self.selectionButton.setText(QtGui.QApplication.translate("MainWindow", "Song", None, QtGui.QApplication.UnicodeUTF8))
         self.countButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Count in to playing", None, QtGui.QApplication.UnicodeUTF8))

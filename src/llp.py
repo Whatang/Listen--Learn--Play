@@ -31,7 +31,7 @@ from MarkedScene import MarkedScene
 
 WINDOW_TITLE = "Listen, Learn, Play"
 TICK_INTERVAL = 10
-SPOOL_INTERVAL = 4 * TICK_INTERVAL
+SPOOL_INTERVAL = 40
 
 class LlpMainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent = None):
@@ -44,6 +44,8 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._filename = None
         self._total = 0
         self._oldMs = 0
+        self._beatsLeft = 0
+        self._beatTimer = None
         self._rewinding = None
         self._forwarding = None
         self._wasPlaying = False
@@ -115,7 +117,8 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self.controlsFrame.setEnabled(True)
             self.markFrame.setEnabled(True)
             self.rightFrame.setEnabled(True)
-            if state == Phonon.PlayingState or ((self._rewinding or self._forwarding) and self._wasPlaying):
+            if (state == Phonon.PlayingState
+                or ((self._rewinding or self._forwarding) and self._wasPlaying)):
                 self.playButton.setIcon(self.PAUSE_ICON)
                 self.countButton.setEnabled(False)
                 self.selectionButton.setEnabled(False)
@@ -127,6 +130,8 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
                 self.loopButton.setEnabled(True)
             beforeEnd = (ms < self._total)
             self.playButton.setEnabled(beforeEnd)
+            self.countButton.setEnabled(self.countButton.isEnabled()
+                                        and beforeEnd)
             self.endButton.setEnabled(beforeEnd)
             self.forwardButton.setEnabled(beforeEnd)
             if not beforeEnd and self._forwarding:
@@ -281,6 +286,33 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self.loopButton.setText("Loop")
         else:
             self.loopButton.setText("Once")
+
+    @pyqtSignature("")
+    def on_countButton_clicked(self):
+        numBeats = self.beatsBox.value()
+        if numBeats == 0:
+            self.playButton.click()
+            self.playButton.setFocus()
+            return
+        bpm = self.bpmBox.value()
+        interval = 60000.0 / bpm
+        self._beatsLeft = numBeats
+        self._beatTimer = QTimer(self)
+        self._beatTimer.setInterval(interval)
+        self._beatTimer.timeout.connect(self._beat)
+        self._beatTimer.start(interval)
+
+    def _beat(self):
+        if self._beatsLeft <= 0:
+            self._beatTimer.stop()
+            self.playButton.click()
+            self.playButton.setFocus()
+        else:
+            self._scene.flash()
+        self._beatsLeft -= 1
+
+
+
 
 def main():
     app = QApplication(sys.argv)

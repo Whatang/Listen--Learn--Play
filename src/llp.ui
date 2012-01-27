@@ -854,7 +854,7 @@
                 <string> bpm</string>
                </property>
                <property name="minimum">
-                <number>1</number>
+                <number>60</number>
                </property>
                <property name="maximum">
                 <number>300</number>
