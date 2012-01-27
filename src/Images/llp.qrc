@@ -1,7 +1,10 @@
 <RCC>
   <qresource prefix="Images">
-    <file alias="NextMark">go-next.png</file>
-    <file alias="PreviousMark">go-previous.png</file>
+    <file alias="NextMark">go-down.png</file>
+    <file alias="PreviousMark">go-up.png</file>
+    <file alias="Zoom In">list-add.png</file>
+    <file alias="Zoom Out">list-remove.png</file>
+    <file alias="Mark">go-previous.png</file>
     <file alias="Open">media-eject.png</file>
     <file alias="Pause">media-playback-pause.png</file>
     <file alias="Play">media-playback-start.png</file>

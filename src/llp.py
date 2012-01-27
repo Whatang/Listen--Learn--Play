@@ -22,8 +22,9 @@ Created on 26 Jan 2012
 
 import sys
 import os
-from PyQt4.QtGui import QApplication, QMainWindow, QDesktopServices, QFileDialog, QIcon, QPixmap, QTransform
-from PyQt4.QtCore import pyqtSignature, QTimer, Qt
+from PyQt4.QtGui import (QApplication, QMainWindow, QDesktopServices,
+                         QFileDialog, QIcon, QPixmap, QTransform)
+from PyQt4.QtCore import pyqtSignature, QTimer
 from PyQt4.phonon import Phonon
 sys.path.append("Images")
 from ui_llp import Ui_MainWindow
@@ -31,7 +32,9 @@ from MarkedScene import MarkedScene
 
 WINDOW_TITLE = "Listen, Learn, Play"
 TICK_INTERVAL = 10
-SPOOL_INTERVAL = 40
+SPOOL_INTERVAL = 1
+MIN_ZOOM = 1
+MAX_ZOOM = 16
 
 class LlpMainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent = None):
@@ -49,6 +52,9 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._rewinding = None
         self._forwarding = None
         self._wasPlaying = False
+        self._zoom = 1
+        self._spool = 0
+        self.setSpool()
         self._scene = MarkedScene(self)
         self._media = Phonon.MediaObject(self)
         self._media.totalTimeChanged.connect(self._totalChanged)
@@ -62,6 +68,10 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         Phonon.createPath(self._media, self._audio)
         self.volumeSlider.setAudioOutput(self._audio)
         self.markView.setScene(self._scene)
+        self.globalView.setScene(self._scene)
+        self._hsc = self.markView.horizontalScrollBar()
+        self._hsc.valueChanged.connect(self._scene.setWindow)
+        self._hsc.rangeChanged.connect(self._scene.setWindowRange)
         self._scene.currentChanged.connect(self.setCurrent)
         self._tick(0)
         self._checkButtons()
@@ -71,7 +81,9 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
                          self.actionNextMark, self.actionPreviousMark,
                          self.actionLoop, self.actionSelection,
                          self.actionOpen, self.actionToggleMute,
-                         self.actionVolumeUp, self.actionVolumeDown])
+                         self.actionVolumeUp, self.actionVolumeDown,
+                         self.actionZoomIn, self.actionZoomOut,
+                         self.actionPageDown, self.actionPageUp])
 
     def printMeta(self):
         for k, v in self._media.metaData().iteritems():
@@ -97,6 +109,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._media.setCurrentSource(Phonon.MediaSource(fname))
         self._scene.newSong()
         self._media.pause() # Makes sure tick signals are emitted
+        self.setZoom(1)
         base = os.path.splitext(os.path.basename(self._filename))[0]
         self.setWindowTitle(WINDOW_TITLE + " - " + base)
 
@@ -122,13 +135,16 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             ms = self._media.currentTime()
         if state in (Phonon.LoadingState, Phonon.BufferingState,
                      Phonon.ErrorState):
+            self.viewFrame.setEnabled(False)
             self.controlsFrame.setEnabled(False)
             self.markFrame.setEnabled(False)
             self.rightFrame.setEnabled(False)
         else:
-            self.controlsFrame.setEnabled(True)
-            self.markFrame.setEnabled(True)
-            self.rightFrame.setEnabled(True)
+            if not self.viewFrame.isEnabled():
+                self.viewFrame.setEnabled(True)
+                self.controlsFrame.setEnabled(True)
+                self.markFrame.setEnabled(True)
+                self.rightFrame.setEnabled(True)
             if (state == Phonon.PlayingState
                 or ((self._rewinding or self._forwarding)
                     and self._wasPlaying)):
@@ -183,7 +199,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._rewinding.start()
 
     def _rewinder(self):
-        newPos = max(0, self._oldMs - SPOOL_INTERVAL)
+        newPos = max(0, self._oldMs - self._spool)
         self._media.seek(newPos)
 
     @pyqtSignature("")
@@ -206,7 +222,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
 
 
     def _forwarder(self):
-        newPos = min(self._total, self._oldMs + SPOOL_INTERVAL)
+        newPos = min(self._total, self._oldMs + self._spool)
         self._media.seek(newPos)
 
     @pyqtSignature("")
@@ -234,30 +250,45 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
     def _totalChanged(self, total):
         self._total = total
         if total > 0:
-            self.markView.setEnabled(True)
+            self.viewFrame.setEnabled(True)
             self.controlsFrame.setEnabled(True)
             self.markFrame.setEnabled(True)
             self.rightFrame.setEnabled(True)
             self.totalLabel.setText("%.2f" % (total / 1000.0))
             self._scene.setTotal(total)
             self._tick(self._media.currentTime())
-            sx = float(self.markView.viewport().width() - 1) / self._scene.width()
-            height = self.markView.viewport().height() - 1
+            self.markView.setSceneRect(self._scene.sceneRect())
+            self.globalView.setSceneRect(self._scene.sceneRect())
+            sx = (float(self.globalView.viewport().width() - 1)
+                  / self._scene.width())
+            height = self.globalView.viewport().height() - 1
             sy = float(height) / self._scene.height()
             transform = QTransform(sx, 0, 0,
                                    0, sy, 0,
                                    0, 0, 1)
-            self.markView.setSceneRect(self._scene.sceneRect())
-            self.markView.setTransform(transform)
+            self.globalView.setTransform(transform)
+            self._changeTransform()
         else:
             self.totalLabel.setText("--")
             self._scene.setTotal(total)
             self._tick(0)
             self.markView.setSceneRect(0, 0, 0, 0)
-            self.markView.setEnabled(False)
+            self.globalView.setSceneRect(0, 0, 0, 0)
+            self.viewFrame.setEnabled(False)
             self.controlsFrame.setEnabled(False)
             self.markFrame.setEnabled(False)
             self.rightFrame.setEnabled(False)
+        self.setZoom()
+
+    def _changeTransform(self):
+        sx = (float(self._zoom * self.markView.viewport().width() - 1)
+              / self._scene.width())
+        height = self.markView.viewport().height() - 1
+        sy = float(height) / self._scene.height()
+        transform = QTransform(sx, 0, 0,
+                               0, sy, 0,
+                               0, 0, 1)
+        self.markView.setTransform(transform)
 
     @pyqtSignature("")
     def on_setBeginButton_clicked(self):
@@ -337,6 +368,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._beatTimer = QTimer(self)
         self._beatTimer.setInterval(interval)
         self._beatTimer.timeout.connect(self._beat)
+        self.viewFrame.setEnabled(False)
         self.controlsFrame.setEnabled(False)
         self.rightFrame.setEnabled(False)
         self.markFrame.setEnabled(False)
@@ -347,6 +379,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
     def _beat(self):
         if self._beatsLeft <= 0:
             self._beatTimer.stop()
+            self.viewFrame.setEnabled(True)
             self.controlsFrame.setEnabled(True)
             self.rightFrame.setEnabled(True)
             self.markFrame.setEnabled(True)
@@ -364,15 +397,61 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSignature("")
     def on_actionVolumeUp_triggered(self):
-        newVolume = min(self.volumeSlider.maximumVolume(),
-                        self._audio.volume() + self.volumeSlider.pageStep() / 100.0)
+        newVolume = min(self.volumeSlider.maximumVolume(), self._audio.volume()
+                        + self.volumeSlider.pageStep() / 100.0)
         self._audio.setVolume(newVolume)
 
     @pyqtSignature("")
     def on_actionVolumeDown_triggered(self):
-        newVolume = max(0,
-                        self._audio.volume() - self.volumeSlider.pageStep() / 100.0)
+        newVolume = max(0, self._audio.volume()
+                        - self.volumeSlider.pageStep() / 100.0)
         self._audio.setVolume(newVolume)
+
+    def setZoom(self, zoom = None):
+        if zoom is not None:
+            self._zoom = zoom
+            self._scene.setZoom(zoom)
+        self.setSpool()
+        self._checkZoomButtons()
+
+    def setSpool(self):
+        if self._total > 0:
+            self._spool = (SPOOL_INTERVAL / 100.0) * (self._total / self._zoom)
+        else:
+            self._spool = 0
+
+    @pyqtSignature("")
+    def on_actionZoomIn_triggered(self):
+        if not self.zoomInButton.isEnabled():
+            return
+        if self._zoom < MAX_ZOOM:
+            self.setZoom(self._zoom * 2)
+            self._changeTransform()
+        self._checkZoomButtons()
+
+    @pyqtSignature("")
+    def on_actionZoomOut_triggered(self):
+        if not self.zoomOutButton.isEnabled():
+            return
+        if self._zoom > MIN_ZOOM:
+            self.setZoom(self._zoom / 2)
+            self._changeTransform()
+        self._checkZoomButtons()
+
+    def _checkZoomButtons(self):
+        self.zoomInButton.setEnabled(self._zoom < MAX_ZOOM)
+        self.zoomOutButton.setEnabled(self._zoom > MIN_ZOOM)
+
+    @pyqtSignature("")
+    def on_actionPageUp_triggered(self):
+        if self.viewFrame.isEnabled() and self._zoom != 1:
+            self._hsc.triggerAction(self._hsc.SliderPageStepSub)
+
+    @pyqtSignature("")
+    def on_actionPageDown_triggered(self):
+        if self.viewFrame.isEnabled() and self._zoom != 1:
+            self._hsc.triggerAction(self._hsc.SliderPageStepAdd)
+
 def main():
     app = QApplication(sys.argv)
     mainWindow = LlpMainWindow()

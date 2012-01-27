@@ -41,11 +41,17 @@ class MarkedScene(QGraphicsScene):
         self._begin = None
         self._end = None
         self._selection = None
+        self._windowRange = 0, 0
         self._total = 0
+        self._zoom = 1
         self.setSceneRect(0, 0, 0, 100)
         self._flasher = self.addRect(0, 0, 0, 0, pen = Qt.blue, brush = Qt.blue)
         self._flasher.setVisible(False)
         self._flasher.setOpacity(0.5)
+        self._theView = self.addRect(-1, -1, 0, 102, pen = Qt.blue)
+        self._theView.setBrush(QBrush(Qt.NoBrush))
+        self._theView.setZValue(20)
+        self._theView.setVisible(False)
 
     def newSong(self):
         self._marks = []
@@ -61,8 +67,10 @@ class MarkedScene(QGraphicsScene):
     def setTotal(self, total):
         self.setSceneRect(0, 0, total, 100)
         self._currentMarker.setVisible(total > 0)
+        self._theView.setVisible(total > 0)
         self._flasher.setRect(0, 0, total, 100)
         self._total = total
+        self.setZoom(self._zoom)
 
     def _setBegin(self, position):
         self._begin = position
@@ -108,9 +116,13 @@ class MarkedScene(QGraphicsScene):
             lastMark = mark
         else:
             theMark = lastMark
-        if self.end is not None and position > self.end and self.end >= theMark:
+        if (self.end is not None
+            and position > self.end
+            and self.end >= theMark):
             theMark = self.end
-        elif self.begin is not None and position > self.begin and self.begin >= theMark:
+        elif (self.begin is not None
+              and position > self.begin
+              and self.begin >= theMark):
             theMark = self.begin
         return theMark
 
@@ -159,7 +171,7 @@ class MarkedScene(QGraphicsScene):
     def mouseReleaseEvent(self, event):
         button = event.button()
         point = event.scenePos()
-        eventTime = int(point.x() + 0.5)
+        eventTime = min(self._total, max(0, int(point.x() + 0.5)))
         if button == Qt.LeftButton:
             self.currentChanged.emit(eventTime)
         elif button == Qt.MidButton:
@@ -169,4 +181,20 @@ class MarkedScene(QGraphicsScene):
         else:
             event.ignore()
 
+    def setZoom(self, zoom):
+        self._zoom = zoom
+        rect = self._theView.rect()
+        rect.setWidth(self._total / zoom)
+        self._theView.setRect(rect)
+        self._theView.setVisible(zoom > 1)
 
+    def setWindowRange(self, a, b):
+        self._windowRange = a, b
+
+    def setWindow(self, value):
+        if self._zoom > 1:
+            start, end = self._windowRange
+            rect = self._theView.rect()
+            xpos = (self._total - rect.width()) * (value - start) / (end - start)
+            rect.moveLeft(xpos)
+            self._theView.setRect(rect)
