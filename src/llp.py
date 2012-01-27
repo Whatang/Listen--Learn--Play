@@ -241,16 +241,13 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self.totalLabel.setText("%.2f" % (total / 1000.0))
             self._scene.setTotal(total)
             self._tick(self._media.currentTime())
-            self.markView.setSceneRect(self._scene.sceneRect())
-            print self._scene.sceneRect()
-            sx = float(self.markView.width() - 3) / self._scene.width()
-            height = self.markView.height() - 3
-            for scrollBar in self.markView.scrollBarWidgets(Qt.AlignBottom | Qt.AlignTop):
-                height -= scrollBar.height()
+            sx = float(self.markView.viewport().width() - 1) / self._scene.width()
+            height = self.markView.viewport().height() - 1
             sy = float(height) / self._scene.height()
             transform = QTransform(sx, 0, 0,
                                    0, sy, 0,
                                    0, 0, 1)
+            self.markView.setSceneRect(self._scene.sceneRect())
             self.markView.setTransform(transform)
         else:
             self.totalLabel.setText("--")
