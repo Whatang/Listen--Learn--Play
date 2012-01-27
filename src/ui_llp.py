@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\LLP\src\llp.ui'
 #
-# Created: Thu Jan 26 21:24:19 2012
+# Created: Thu Jan 26 22:56:44 2012
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -39,6 +39,7 @@ class Ui_MainWindow(object):
         self.volumeSlider.setSizePolicy(sizePolicy)
         self.volumeSlider.setMinimumSize(QtCore.QSize(0, 0))
         self.volumeSlider.setMaximumSize(QtCore.QSize(44, 10000))
+        self.volumeSlider.setMaximumVolume(1.0)
         self.volumeSlider.setOrientation(QtCore.Qt.Vertical)
         self.volumeSlider.setMuteVisible(True)
         self.volumeSlider.setObjectName(_fromUtf8("volumeSlider"))
@@ -331,42 +332,163 @@ class Ui_MainWindow(object):
         self.actionOpen.setObjectName(_fromUtf8("actionOpen"))
         self.actionExit = QtGui.QAction(MainWindow)
         self.actionExit.setObjectName(_fromUtf8("actionExit"))
+        self.actionPlay = QtGui.QAction(MainWindow)
+        self.actionPlay.setObjectName(_fromUtf8("actionPlay"))
+        self.actionMark = QtGui.QAction(MainWindow)
+        self.actionMark.setObjectName(_fromUtf8("actionMark"))
+        self.actionHome = QtGui.QAction(MainWindow)
+        self.actionHome.setObjectName(_fromUtf8("actionHome"))
+        self.actionEnd = QtGui.QAction(MainWindow)
+        self.actionEnd.setObjectName(_fromUtf8("actionEnd"))
+        self.actionPreviousMark = QtGui.QAction(MainWindow)
+        self.actionPreviousMark.setObjectName(_fromUtf8("actionPreviousMark"))
+        self.actionNextMark = QtGui.QAction(MainWindow)
+        self.actionNextMark.setObjectName(_fromUtf8("actionNextMark"))
+        self.actionCountIn = QtGui.QAction(MainWindow)
+        self.actionCountIn.setObjectName(_fromUtf8("actionCountIn"))
+        self.actionMark_2 = QtGui.QAction(MainWindow)
+        self.actionMark_2.setObjectName(_fromUtf8("actionMark_2"))
+        self.actionSelection = QtGui.QAction(MainWindow)
+        self.actionSelection.setObjectName(_fromUtf8("actionSelection"))
+        self.actionLoop = QtGui.QAction(MainWindow)
+        self.actionLoop.setObjectName(_fromUtf8("actionLoop"))
+        self.actionToggleMute = QtGui.QAction(MainWindow)
+        self.actionToggleMute.setObjectName(_fromUtf8("actionToggleMute"))
+        self.actionVolumeUp = QtGui.QAction(MainWindow)
+        self.actionVolumeUp.setObjectName(_fromUtf8("actionVolumeUp"))
+        self.actionVolumeDown = QtGui.QAction(MainWindow)
+        self.actionVolumeDown.setObjectName(_fromUtf8("actionVolumeDown"))
 
         self.retranslateUi(MainWindow)
         QtCore.QObject.connect(self.openButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionOpen.trigger)
         QtCore.QObject.connect(self.actionExit, QtCore.SIGNAL(_fromUtf8("triggered()")), MainWindow.close)
+        QtCore.QObject.connect(self.playButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionPlay.trigger)
+        QtCore.QObject.connect(self.markButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionMark.trigger)
+        QtCore.QObject.connect(self.nextMarkButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionNextMark.trigger)
+        QtCore.QObject.connect(self.startButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionHome.trigger)
+        QtCore.QObject.connect(self.endButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionEnd.trigger)
+        QtCore.QObject.connect(self.countButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionCountIn.trigger)
+        QtCore.QObject.connect(self.actionMark_2, QtCore.SIGNAL(_fromUtf8("triggered()")), self.actionMark.trigger)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Listen, Learn, Play", None, QtGui.QApplication.UnicodeUTF8))
-        self.openButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Open a new music file", None, QtGui.QApplication.UnicodeUTF8))
-        self.markButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Add/delete a mark at the current position", None, QtGui.QApplication.UnicodeUTF8))
+        self.volumeSlider.setToolTip(QtGui.QApplication.translate("MainWindow", "Mute [Esc]\n"
+"Volume Up [+]\n"
+"Volume Down [-]", None, QtGui.QApplication.UnicodeUTF8))
+        self.openButton.setToolTip(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Open a new music file</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">[Ctrl+N]</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.markButton.setToolTip(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Add/delete a mark at the current position</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">[Return]</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.markButton.setText(QtGui.QApplication.translate("MainWindow", "Mark", None, QtGui.QApplication.UnicodeUTF8))
-        self.prevMarkButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Jump to the previous mark", None, QtGui.QApplication.UnicodeUTF8))
-        self.nextMarkButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Jump to the next mark", None, QtGui.QApplication.UnicodeUTF8))
-        self.startButton.setToolTip(QtGui.QApplication.translate("MainWindow", "To Start", None, QtGui.QApplication.UnicodeUTF8))
+        self.prevMarkButton.setToolTip(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Jump to the previous mark</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">[Up]</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.nextMarkButton.setToolTip(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Jump to the next mark</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">[Down]</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.startButton.setToolTip(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">To Start</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">[Home]</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.rewindButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Rewind", None, QtGui.QApplication.UnicodeUTF8))
-        self.playButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Play", None, QtGui.QApplication.UnicodeUTF8))
+        self.playButton.setToolTip(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Play</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">[Space]</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.forwardButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Fast Forward", None, QtGui.QApplication.UnicodeUTF8))
-        self.endButton.setToolTip(QtGui.QApplication.translate("MainWindow", "To End", None, QtGui.QApplication.UnicodeUTF8))
+        self.endButton.setToolTip(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">To End</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">[End]</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.positionIndicator.setText(QtGui.QApplication.translate("MainWindow", "--", None, QtGui.QApplication.UnicodeUTF8))
         self.dividerLabel.setText(QtGui.QApplication.translate("MainWindow", "/", None, QtGui.QApplication.UnicodeUTF8))
         self.totalLabel.setText(QtGui.QApplication.translate("MainWindow", "--", None, QtGui.QApplication.UnicodeUTF8))
-        self.setBeginButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Set the beginning of the selection", None, QtGui.QApplication.UnicodeUTF8))
+        self.setBeginButton.setToolTip(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Set the beginning of the selection</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.setBeginButton.setText(QtGui.QApplication.translate("MainWindow", "Begin", None, QtGui.QApplication.UnicodeUTF8))
-        self.setEndButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Set the end of the selection", None, QtGui.QApplication.UnicodeUTF8))
+        self.setEndButton.setToolTip(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Set the end of the selection</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.setEndButton.setText(QtGui.QApplication.translate("MainWindow", "End", None, QtGui.QApplication.UnicodeUTF8))
-        self.loopButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Repeat endlessly", None, QtGui.QApplication.UnicodeUTF8))
+        self.loopButton.setToolTip(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Repeat endlessly or play once</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">[L]</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.loopButton.setText(QtGui.QApplication.translate("MainWindow", "Once", None, QtGui.QApplication.UnicodeUTF8))
-        self.selectionButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Switch between playing song and selection", None, QtGui.QApplication.UnicodeUTF8))
+        self.selectionButton.setToolTip(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Switch between playing song and selection</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">[S]</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.selectionButton.setText(QtGui.QApplication.translate("MainWindow", "Song", None, QtGui.QApplication.UnicodeUTF8))
-        self.countButton.setToolTip(QtGui.QApplication.translate("MainWindow", "Count in to playing", None, QtGui.QApplication.UnicodeUTF8))
+        self.countButton.setToolTip(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Count in to playing</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">[Ctril+Space]</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.countButton.setText(QtGui.QApplication.translate("MainWindow", "Count In", None, QtGui.QApplication.UnicodeUTF8))
         self.beatsBox.setSuffix(QtGui.QApplication.translate("MainWindow", " beats", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MainWindow", "at", None, QtGui.QApplication.UnicodeUTF8))
         self.bpmBox.setSuffix(QtGui.QApplication.translate("MainWindow", " bpm", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOpen.setText(QtGui.QApplication.translate("MainWindow", "Open", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionOpen.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+N", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExit.setText(QtGui.QApplication.translate("MainWindow", "Exit", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPlay.setText(QtGui.QApplication.translate("MainWindow", "play", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPlay.setShortcut(QtGui.QApplication.translate("MainWindow", "Space", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMark.setText(QtGui.QApplication.translate("MainWindow", "mark", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMark.setShortcut(QtGui.QApplication.translate("MainWindow", "Return", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionHome.setText(QtGui.QApplication.translate("MainWindow", "home", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionHome.setShortcut(QtGui.QApplication.translate("MainWindow", "Home", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionEnd.setText(QtGui.QApplication.translate("MainWindow", "end", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionEnd.setShortcut(QtGui.QApplication.translate("MainWindow", "End", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPreviousMark.setText(QtGui.QApplication.translate("MainWindow", "previousMark", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPreviousMark.setShortcut(QtGui.QApplication.translate("MainWindow", "Up", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNextMark.setText(QtGui.QApplication.translate("MainWindow", "nextMark", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNextMark.setShortcut(QtGui.QApplication.translate("MainWindow", "Down", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCountIn.setText(QtGui.QApplication.translate("MainWindow", "countIn", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCountIn.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Space", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMark_2.setText(QtGui.QApplication.translate("MainWindow", "mark", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMark_2.setShortcut(QtGui.QApplication.translate("MainWindow", "Enter", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSelection.setText(QtGui.QApplication.translate("MainWindow", "selection", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSelection.setShortcut(QtGui.QApplication.translate("MainWindow", "S", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionLoop.setText(QtGui.QApplication.translate("MainWindow", "loop", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionLoop.setShortcut(QtGui.QApplication.translate("MainWindow", "L", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionToggleMute.setText(QtGui.QApplication.translate("MainWindow", "toggleMute", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionToggleMute.setShortcut(QtGui.QApplication.translate("MainWindow", "Esc", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionVolumeUp.setText(QtGui.QApplication.translate("MainWindow", "volumeUp", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionVolumeUp.setShortcut(QtGui.QApplication.translate("MainWindow", "+", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionVolumeDown.setText(QtGui.QApplication.translate("MainWindow", "volumeDown", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionVolumeDown.setShortcut(QtGui.QApplication.translate("MainWindow", "-", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import phonon
 import llp_rc
