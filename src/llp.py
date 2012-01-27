@@ -93,6 +93,8 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSignature("")
     def on_actionOpen_triggered(self):
+        if not self.openButton.isEnabled():
+            return
         if self._media.state() == Phonon.PlayingState:
             self._media.pause()
         if self._filename is not None:
@@ -137,16 +139,14 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             ms = self._media.currentTime()
         if state in (Phonon.LoadingState, Phonon.BufferingState,
                      Phonon.ErrorState):
-            self.viewFrame.setEnabled(False)
+            self.centerFrame.setEnabled(False)
             self.controlsFrame.setEnabled(False)
-            self.markFrame.setEnabled(False)
-            self.rightFrame.setEnabled(False)
+            self.countFrame.setEnabled(False)
         else:
             if not self.viewFrame.isEnabled():
-                self.viewFrame.setEnabled(True)
+                self.centerFrame.setEnabled(True)
                 self.controlsFrame.setEnabled(True)
-                self.markFrame.setEnabled(True)
-                self.rightFrame.setEnabled(True)
+                self.countFrame.setEnabled(True)
             if (state == Phonon.PlayingState
                 or ((self._rewinding or self._forwarding)
                     and self._wasPlaying)):
@@ -252,10 +252,9 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
     def _totalChanged(self, total):
         self._total = total
         if total > 0:
-            self.viewFrame.setEnabled(True)
+            self.centerFrame.setEnabled(True)
             self.controlsFrame.setEnabled(True)
-            self.markFrame.setEnabled(True)
-            self.rightFrame.setEnabled(True)
+            self.countFrame.setEnabled(True)
             self.totalLabel.setText("%.2f" % (total / 1000.0))
             self._scene.setTotal(total)
             self._tick(self._media.currentTime())
@@ -276,10 +275,9 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self._tick(0)
             self.markView.setSceneRect(0, 0, 0, 0)
             self.globalView.setSceneRect(0, 0, 0, 0)
-            self.viewFrame.setEnabled(False)
+            self.centerFrame.setEnabled(False)
             self.controlsFrame.setEnabled(False)
-            self.markFrame.setEnabled(False)
-            self.rightFrame.setEnabled(False)
+            self.countFrame.setEnabled(False)
         self.setZoom()
 
     def _changeTransform(self):
@@ -372,23 +370,19 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._beatTimer = QTimer(self)
         self._beatTimer.setInterval(interval)
         self._beatTimer.timeout.connect(self._beat)
-        self.viewFrame.setEnabled(False)
+        self.centerFrame.setEnabled(False)
         self.controlsFrame.setEnabled(False)
-        self.rightFrame.setEnabled(False)
-        self.markFrame.setEnabled(False)
-        self.actionOpen.setEnabled(False)
-        self.openButton.setEnabled(False)
+        self.countFrame.setEnabled(False)
+        self.toolsFrame.setEnabled(False)
         self._beatTimer.start(interval)
 
     def _beat(self):
         if self._beatsLeft <= 0:
             self._beatTimer.stop()
-            self.viewFrame.setEnabled(True)
+            self.centerFrame.setEnabled(True)
             self.controlsFrame.setEnabled(True)
-            self.rightFrame.setEnabled(True)
-            self.markFrame.setEnabled(True)
-            self.actionOpen.setEnabled(True)
-            self.openButton.setEnabled(True)
+            self.countFrame.setEnabled(True)
+            self.toolsFrame.setEnabled(True)
             self.actionPlay.trigger()
             self.playButton.setFocus()
         else:

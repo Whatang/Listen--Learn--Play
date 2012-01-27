@@ -1,16 +1,33 @@
 <RCC>
   <qresource prefix="Images">
+    <file alias="Count In">clock--arrow.png</file>
+    <file alias="SetBegin">fill-medium.png</file>
+    <file alias="SetEnd">fill-medium-180.png</file>
+    <file alias="Whole Song">blue-document-music.png</file>
+    <file alias="Selection">selection-select.png</file>
+    <file alias="Mark">anchor.png</file>
+    <file alias="Zoom In">magnifier-zoom-in.png</file>
+    <file alias="Zoom Out">magnifier-zoom-out.png</file>
+    <file alias="Loop">arrow-repeat.png</file>
+    <file alias="End">control-stop.png</file>
+    <file alias="Start">control-stop-180.png</file>
+    <file alias="Play">control.png</file>
+    <file alias="Forward">control-double.png</file>
+    <file alias="Rewind">control-double-180.png</file>
+    <file alias="Open">control-eject.png</file>
+    <file alias="Pause">control-pause.png</file>
+    <file alias="Once">arrow-repeat-once.png</file>
     <file alias="NextMark">go-down.png</file>
     <file alias="PreviousMark">go-up.png</file>
-    <file alias="Zoom In">list-add.png</file>
-    <file alias="Zoom Out">list-remove.png</file>
-    <file alias="Mark">go-previous.png</file>
-    <file alias="Open">media-eject.png</file>
-    <file alias="Pause">media-playback-pause.png</file>
-    <file alias="Play">media-playback-start.png</file>
-    <file alias="Rewind">media-seek-backward.png</file>
-    <file alias="Forward">media-seek-forward.png</file>
-    <file alias="Start">media-skip-backward.png</file>
-    <file alias="End">media-skip-forward.png</file>
+    <file>list-add.png</file>
+    <file>list-remove.png</file>
+    <file>go-previous.png</file>
+    <file>media-eject.png</file>
+    <file>media-playback-pause.png</file>
+    <file>media-playback-start.png</file>
+    <file>media-seek-backward.png</file>
+    <file>media-seek-forward.png</file>
+    <file>media-skip-backward.png</file>
+    <file>media-skip-forward.png</file>
   </qresource>
 </RCC>
