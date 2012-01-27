@@ -451,8 +451,17 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self._hsc.triggerAction(self._hsc.SliderPageStepAdd)
 
 def main():
+    import ctypes
     app = QApplication(sys.argv)
+    myappid = 'Whatang.DrumBurp'
+    try:
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+    except AttributeError:
+        pass
     mainWindow = LlpMainWindow()
+    icon = QIcon()
+    icon.addPixmap(QPixmap(":/Images/LLP"))
+    app.setWindowIcon(icon)
     mainWindow.show()
     app.exec_()
 

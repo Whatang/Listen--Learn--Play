@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="Images">
+    <file alias="LLP">ear-listen-large.png</file>
     <file alias="Count In">clock--arrow.png</file>
     <file alias="SetBegin">fill-medium.png</file>
     <file alias="SetEnd">fill-medium-180.png</file>
