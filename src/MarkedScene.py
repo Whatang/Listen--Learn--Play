@@ -20,6 +20,7 @@ Copyright (C) 2012 Michael Thomas
 '''
 
 from PyQt4.QtGui import QGraphicsScene, QPen, QBrush
+from PyQt4.QtCore import pyqtSignal
 from PyQt4.Qt import Qt, QTimer
 
 class MarkedScene(QGraphicsScene):
@@ -27,6 +28,7 @@ class MarkedScene(QGraphicsScene):
     classdocs
     '''
 
+    currentChanged = pyqtSignal(int)
 
     def __init__(self, main):
         super(MarkedScene, self).__init__(main)
@@ -44,7 +46,6 @@ class MarkedScene(QGraphicsScene):
         self._flasher = self.addRect(0, 0, 0, 0, pen = Qt.blue, brush = Qt.blue)
         self._flasher.setVisible(False)
         self._flasher.setOpacity(0.5)
-
 
     def newSong(self):
         self._marks = []
@@ -151,5 +152,21 @@ class MarkedScene(QGraphicsScene):
     def flash(self):
         self._flasher.setVisible(True)
         QTimer.singleShot(100, lambda : self._flasher.setVisible(False))
+
+    def mousePressEvent(self, event):
+        event.accept()
+
+    def mouseReleaseEvent(self, event):
+        button = event.button()
+        point = event.scenePos()
+        eventTime = int(point.x() + 0.5)
+        if button == Qt.LeftButton:
+            self.currentChanged.emit(eventTime)
+        elif button == Qt.MidButton:
+            self.begin = eventTime
+        elif button == Qt.RightButton:
+            self.end = eventTime
+        else:
+            event.ignore()
 
 

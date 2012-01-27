@@ -23,7 +23,7 @@ Created on 26 Jan 2012
 import sys
 import os
 from PyQt4.QtGui import QApplication, QMainWindow, QDesktopServices, QFileDialog, QIcon, QPixmap, QTransform
-from PyQt4.QtCore import pyqtSignature, QTimer
+from PyQt4.QtCore import pyqtSignature, QTimer, Qt
 from PyQt4.phonon import Phonon
 sys.path.append("Images")
 from ui_llp import Ui_MainWindow
@@ -60,9 +60,9 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._media.prefinishMarkReached.connect(self._prefinish)
         self._media.finished.connect(self._finish)
         Phonon.createPath(self._media, self._audio)
-        self.seekSlider.setMediaObject(self._media)
         self.volumeSlider.setAudioOutput(self._audio)
         self.markView.setScene(self._scene)
+        self._scene.currentChanged.connect(self.setCurrent)
         self._tick(0)
         self._checkButtons()
         self.addActions([self.actionPlay, self.actionMark,
@@ -228,6 +228,8 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._oldMs = ms
         self._scene.setCurrent(ms)
 
+    def setCurrent(self, ms):
+        self._media.seek(ms)
 
     def _totalChanged(self, total):
         self._total = total
@@ -240,8 +242,15 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self._scene.setTotal(total)
             self._tick(self._media.currentTime())
             self.markView.setSceneRect(self._scene.sceneRect())
-            self.markView.setTransform(QTransform(float(self.markView.width()) / self._scene.width(),
-                                                  0, 0, 0, 1, 0, 0, 0, 1))
+            sx = float(self.markView.width()) / self._scene.width()
+            height = self.markView.height()
+            for scrollBar in self.markView.scrollBarWidgets(Qt.AlignBottom | Qt.AlignTop):
+                height -= scrollBar.height()
+            sy = float(height) / self._scene.height()
+            transform = QTransform(sx, 0, 0,
+                                   0, sy, 0,
+                                   0, 0, 1)
+            self.markView.setTransform(transform)
         else:
             self.totalLabel.setText("--")
             self._scene.setTotal(total)
