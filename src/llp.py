@@ -83,7 +83,9 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
                          self.actionOpen, self.actionToggleMute,
                          self.actionVolumeUp, self.actionVolumeDown,
                          self.actionZoomIn, self.actionZoomOut,
-                         self.actionPageDown, self.actionPageUp])
+                         self.actionPageDown, self.actionPageUp,
+                         self.actionSetBegin, self.actionSetBegin_2,
+                         self.actionSetEnd, self.actionSetEnd_2])
 
     def printMeta(self):
         for k, v in self._media.metaData().iteritems():
@@ -291,13 +293,15 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self.markView.setTransform(transform)
 
     @pyqtSignature("")
-    def on_setBeginButton_clicked(self):
-        self._scene.begin = self._oldMs
+    def on_actionSetBegin_triggered(self):
+        if self.setBeginButton.isEnabled():
+            self._scene.begin = self._oldMs
 
     @pyqtSignature("")
-    def on_setEndButton_clicked(self):
-        self._scene.end = self._oldMs
-        self._media.setPrefinishMark(self._total - self._oldMs)
+    def on_actionSetEnd_triggered(self):
+        if self.setEndButton.isEnabled():
+            self._scene.end = self._oldMs
+            self._media.setPrefinishMark(self._total - self._oldMs)
 
     @pyqtSignature("")
     def on_actionMark_triggered(self):

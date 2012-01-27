@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\LLP\src\llp.ui'
 #
-# Created: Fri Jan 27 13:44:00 2012
+# Created: Fri Jan 27 15:28:03 2012
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -415,6 +415,14 @@ class Ui_MainWindow(object):
         self.actionPageDown.setObjectName(_fromUtf8("actionPageDown"))
         self.actionPageUp = QtGui.QAction(MainWindow)
         self.actionPageUp.setObjectName(_fromUtf8("actionPageUp"))
+        self.actionSetBegin = QtGui.QAction(MainWindow)
+        self.actionSetBegin.setObjectName(_fromUtf8("actionSetBegin"))
+        self.actionSetEnd = QtGui.QAction(MainWindow)
+        self.actionSetEnd.setObjectName(_fromUtf8("actionSetEnd"))
+        self.actionSetBegin_2 = QtGui.QAction(MainWindow)
+        self.actionSetBegin_2.setObjectName(_fromUtf8("actionSetBegin_2"))
+        self.actionSetEnd_2 = QtGui.QAction(MainWindow)
+        self.actionSetEnd_2.setObjectName(_fromUtf8("actionSetEnd_2"))
 
         self.retranslateUi(MainWindow)
         QtCore.QObject.connect(self.openButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionOpen.trigger)
@@ -429,6 +437,10 @@ class Ui_MainWindow(object):
         QtCore.QObject.connect(self.prevMarkButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionPreviousMark.trigger)
         QtCore.QObject.connect(self.zoomInButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionZoomIn.trigger)
         QtCore.QObject.connect(self.zoomOutButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionZoomOut.trigger)
+        QtCore.QObject.connect(self.actionSetBegin_2, QtCore.SIGNAL(_fromUtf8("triggered()")), self.actionSetBegin.trigger)
+        QtCore.QObject.connect(self.actionSetEnd_2, QtCore.SIGNAL(_fromUtf8("triggered()")), self.actionSetEnd.trigger)
+        QtCore.QObject.connect(self.setBeginButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionSetBegin.trigger)
+        QtCore.QObject.connect(self.setEndButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.actionSetEnd.trigger)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -568,6 +580,14 @@ class Ui_MainWindow(object):
         self.actionPageDown.setShortcut(QtGui.QApplication.translate("MainWindow", "PgDown", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPageUp.setText(QtGui.QApplication.translate("MainWindow", "pageUp", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPageUp.setShortcut(QtGui.QApplication.translate("MainWindow", "PgUp", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSetBegin.setText(QtGui.QApplication.translate("MainWindow", "setBegin", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSetBegin.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Return", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSetEnd.setText(QtGui.QApplication.translate("MainWindow", "setEnd", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSetEnd.setShortcut(QtGui.QApplication.translate("MainWindow", "Alt+Return", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSetBegin_2.setText(QtGui.QApplication.translate("MainWindow", "setBegin", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSetBegin_2.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Enter", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSetEnd_2.setText(QtGui.QApplication.translate("MainWindow", "setEnd", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSetEnd_2.setShortcut(QtGui.QApplication.translate("MainWindow", "Alt+Enter", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import phonon
 import llp_rc
