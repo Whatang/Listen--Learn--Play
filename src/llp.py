@@ -71,8 +71,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self.markView.setScene(self._scene)
         self.globalView.setScene(self._scene)
         self._hsc = self.markView.horizontalScrollBar()
-        self._hsc.valueChanged.connect(self._scene.setWindow)
-        self._hsc.rangeChanged.connect(self._scene.setWindowRange)
+        self._hsc.valueChanged.connect(self._setWindow)
         self._scene.currentChanged.connect(self.setCurrent)
         self._tick(0)
         self._checkButtons()
@@ -266,10 +265,11 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self.totalLabel.setText("%.2f" % (total / 1000.0))
             self._scene.setTotal(total)
             self._tick(self._media.currentTime())
+            self.markView.setViewportMargins(0, 0, 0, 0)
             self.markView.setSceneRect(self._scene.sceneRect())
             self.globalView.setSceneRect(self._scene.sceneRect())
             sx = (float(self.globalView.viewport().width() - 1)
-                  / self._scene.width())
+                  / (self._scene.width()))
             height = self.globalView.viewport().height() - 1
             sy = float(height) / self._scene.height()
             transform = QTransform(sx, 0, 0,
@@ -289,7 +289,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self.setZoom()
 
     def _changeTransform(self):
-        sx = (float(self._zoom * self.markView.viewport().width() - 1)
+        sx = (float(self._zoom * (self.markView.viewport().width()))
               / self._scene.width())
         height = self.markView.viewport().height() - 1
         sy = float(height) / self._scene.height()
@@ -297,6 +297,8 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
                                0, sy, 0,
                                0, 0, 1)
         self.markView.setTransform(transform)
+        self.markView.setSceneRect(self._scene.sceneRect())
+
 
     @pyqtSignature("")
     def on_actionSetBegin_triggered(self):
@@ -456,6 +458,10 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
     def _doTracking(self):
         if self.trackButton.isEnabled() and self.trackButton.isChecked():
             self.markView.centerOn(self._oldMs, 0)
+
+    def _setWindow(self, unusedValue):
+        topLeft = self.markView.mapToScene(0, 0)
+        self._scene.setWindow(topLeft)
 
 def main():
     import ctypes
