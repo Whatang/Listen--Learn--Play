@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\LLP\src\llp.ui'
 #
-# Created: Fri Jan 27 18:43:30 2012
+# Created: Fri Jan 27 20:49:41 2012
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -482,6 +482,16 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         spacerItem2 = QtGui.QSpacerItem(230, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem2)
+        self.settingsButton = QtGui.QPushButton(self.toolsFrame)
+        self.settingsButton.setMinimumSize(QtCore.QSize(28, 24))
+        self.settingsButton.setMaximumSize(QtCore.QSize(28, 24))
+        self.settingsButton.setText(_fromUtf8(""))
+        icon16 = QtGui.QIcon()
+        icon16.addPixmap(QtGui.QPixmap(_fromUtf8(":/Images/Settings")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.settingsButton.setIcon(icon16)
+        self.settingsButton.setFlat(True)
+        self.settingsButton.setObjectName(_fromUtf8("settingsButton"))
+        self.horizontalLayout.addWidget(self.settingsButton)
         self.openButton = QtGui.QPushButton(self.toolsFrame)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -491,9 +501,9 @@ class Ui_MainWindow(object):
         self.openButton.setMinimumSize(QtCore.QSize(28, 24))
         self.openButton.setMaximumSize(QtCore.QSize(28, 24))
         self.openButton.setText(_fromUtf8(""))
-        icon16 = QtGui.QIcon()
-        icon16.addPixmap(QtGui.QPixmap(_fromUtf8(":/Images/Open")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.openButton.setIcon(icon16)
+        icon17 = QtGui.QIcon()
+        icon17.addPixmap(QtGui.QPixmap(_fromUtf8(":/Images/Open")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.openButton.setIcon(icon17)
         self.openButton.setIconSize(QtCore.QSize(32, 32))
         self.openButton.setFlat(True)
         self.openButton.setObjectName(_fromUtf8("openButton"))

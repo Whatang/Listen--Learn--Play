@@ -27,8 +27,13 @@ from PyQt4.QtGui import (QApplication, QMainWindow, QDesktopServices,
 from PyQt4.QtCore import pyqtSignature, QTimer
 from PyQt4.phonon import Phonon
 sys.path.append("Images")
+import pygame
+from pygame import midi
+
 from ui_llp import Ui_MainWindow
 from MarkedScene import MarkedScene
+from controlSettings import ControlSettings
+from editSettings import EditSettings
 
 WINDOW_TITLE = "Listen, Learn, Play"
 TICK_INTERVAL = 25
@@ -88,6 +93,10 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
                          self.actionSetBegin, self.actionSetBegin_2,
                          self.actionSetEnd, self.actionSetEnd_2,
                          self.actionTrack])
+        self._controls = ControlSettings()
+        self._controls.addAction(self.actionHome, "Go to start")
+        self._controls.addAction(self.actionPlay, "Play/pause playback")
+        self._controls.addAction(self.actionEnd, "Go to end")
 
     def printMeta(self):
         for k, v in self._media.metaData().iteritems():
@@ -457,6 +466,12 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         if self.trackButton.isEnabled() and self.trackButton.isChecked():
             self.markView.centerOn(self._oldMs, 0)
 
+    @pyqtSignature("")
+    def on_settingsButton_clicked(self):
+        dlg = EditSettings(self._controls, self)
+        if dlg.exec_():
+            print "OK"
+
 def main():
     import ctypes
     app = QApplication(sys.argv)
@@ -469,6 +484,8 @@ def main():
     icon = QIcon()
     icon.addPixmap(QPixmap(":/Images/LLP"))
     app.setWindowIcon(icon)
+    pygame.init()
+    midi.init()
     mainWindow.show()
     app.exec_()
 
