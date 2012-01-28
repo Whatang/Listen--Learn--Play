@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\LLP\src\midiSettingsDialog.ui'
 #
-# Created: Fri Jan 27 21:12:34 2012
+# Created: Sat Jan 28 11:13:20 2012
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -33,6 +33,13 @@ class Ui_MidiSettingsDialog(object):
         self._inputSelector.setMinimumSize(QtCore.QSize(200, 0))
         self._inputSelector.setObjectName(_fromUtf8("_inputSelector"))
         self.horizontalLayout.addWidget(self._inputSelector)
+        self.refreshButton = QtGui.QPushButton(MidiSettingsDialog)
+        self.refreshButton.setText(_fromUtf8(""))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/Images/Refresh")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.refreshButton.setIcon(icon)
+        self.refreshButton.setObjectName(_fromUtf8("refreshButton"))
+        self.horizontalLayout.addWidget(self.refreshButton)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -58,6 +65,7 @@ class Ui_MidiSettingsDialog(object):
         self._settingsTable.horizontalHeader().setMinimumSectionSize(50)
         self._settingsTable.horizontalHeader().setSortIndicatorShown(True)
         self._settingsTable.horizontalHeader().setStretchLastSection(True)
+        self._settingsTable.verticalHeader().setVisible(False)
         self.verticalLayout.addWidget(self._settingsTable)
         self.buttonBox = QtGui.QDialogButtonBox(MidiSettingsDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -74,10 +82,14 @@ class Ui_MidiSettingsDialog(object):
 
     def retranslateUi(self, MidiSettingsDialog):
         MidiSettingsDialog.setWindowTitle(QtGui.QApplication.translate("MidiSettingsDialog", "Dialog", None, QtGui.QApplication.UnicodeUTF8))
+        self._midiOnBox.setToolTip(QtGui.QApplication.translate("MidiSettingsDialog", "Use MIDI input to control LLP", None, QtGui.QApplication.UnicodeUTF8))
         self._midiOnBox.setText(QtGui.QApplication.translate("MidiSettingsDialog", "Enable MIDI control", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MidiSettingsDialog", "MIDI Input", None, QtGui.QApplication.UnicodeUTF8))
+        self._inputSelector.setToolTip(QtGui.QApplication.translate("MidiSettingsDialog", "Select a MIDI input device", None, QtGui.QApplication.UnicodeUTF8))
+        self.refreshButton.setToolTip(QtGui.QApplication.translate("MidiSettingsDialog", "Refresh the list of MIDI inputs", None, QtGui.QApplication.UnicodeUTF8))
         self._settingsTable.setSortingEnabled(True)
         self._settingsTable.horizontalHeaderItem(0).setText(QtGui.QApplication.translate("MidiSettingsDialog", "Operation", None, QtGui.QApplication.UnicodeUTF8))
         self._settingsTable.horizontalHeaderItem(1).setText(QtGui.QApplication.translate("MidiSettingsDialog", "Shortcut", None, QtGui.QApplication.UnicodeUTF8))
         self._settingsTable.horizontalHeaderItem(2).setText(QtGui.QApplication.translate("MidiSettingsDialog", "MIDI Setting", None, QtGui.QApplication.UnicodeUTF8))
 
+import llp_rc

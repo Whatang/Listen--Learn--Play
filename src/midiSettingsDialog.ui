@@ -18,6 +18,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QCheckBox" name="_midiOnBox">
+       <property name="toolTip">
+        <string>Use MIDI input to control LLP</string>
+       </property>
        <property name="layoutDirection">
         <enum>Qt::RightToLeft</enum>
        </property>
@@ -43,6 +46,23 @@
          <width>200</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Select a MIDI input device</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="refreshButton">
+       <property name="toolTip">
+        <string>Refresh the list of MIDI inputs</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="Images/llp.qrc">
+         <normaloff>:/Images/Refresh</normaloff>:/Images/Refresh</iconset>
        </property>
       </widget>
      </item>
@@ -134,7 +154,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="Images/llp.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>
