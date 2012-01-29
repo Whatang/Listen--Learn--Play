@@ -6,41 +6,35 @@ Created on 28 Jan 2012
 '''
 
 from PyQt4.QtGui import QDialog
-from PyQt4.QtCore import QThread
 from ui_midiLearnDialog import Ui_midiLearnDialog
 
-class MidiLearner(QThread):
-    def __init__(self, midiDevice):
-        super(MidiLearner, self).__init__()
-        self._midiDevice = midiDevice
-        self.midiData = None
-        self.running = False
-
-    def run(self):
-        self.running = True
-        while self._midiDevice.poll():
-            self._midiDevice.read(1)
-        while self.running:
-            self.msleep(10)
-            if self._midiDevice.poll():
-                self.midiData = self._midiDevice.read(1)[0][0]
-                return
-
+from midiMessages import MidiControlThread
 
 class MidiLearnDialog(QDialog, Ui_midiLearnDialog):
-    def __init__(self, midiDevice, parent = None):
+    def __init__(self, deviceId, parent = None):
         super(MidiLearnDialog, self).__init__(parent)
         self.setupUi(self)
-        self.thread = MidiLearner(midiDevice)
+        self.thread = MidiControlThread(deviceId)
+        self._midiData = None
 
     def exec_(self):
-        self.thread.finished.connect(self.accept)
+        self.thread.midiReceived.connect(self._midiReceived)
         self.thread.start()
         return super(MidiLearnDialog, self).exec_()
 
     def reject(self):
-        self.thread.running = False
+        self.thread.close()
+        self.thread.wait()
         super(MidiLearnDialog, self).reject()
 
+    def accept(self):
+        self.thread.close()
+        self.thread.wait()
+        super(MidiLearnDialog, self).accept()
+
+    def _midiReceived(self, midiMsg):
+        self._midiData = midiMsg
+        self.accept()
+
     def getMidiData(self):
-        return self.thread.midiData
+        return self._midiData

@@ -42,7 +42,7 @@ class EditSettings(QDialog, Ui_MidiSettingsDialog):
         self._inputSelector.setEnabled(midiOn)
         self._inputLabel.setEnabled(midiOn)
         self._refreshButton.setEnabled(midiOn)
-        self._midiInput = None
+        self._midiInput = -1
         self._lastMidi = -1
         self._originalMidi = -1
         if self._settings.midiDevice != -1:
@@ -82,8 +82,7 @@ class EditSettings(QDialog, Ui_MidiSettingsDialog):
 
     def _midiOnToggled(self, onOff):
         if not onOff:
-            del self._midiInput
-            self._midiInput = None
+            self._midiInput = -1
         self._populateMidiInputs()
 
     def _selectNewMidi(self, index):
@@ -94,18 +93,14 @@ class EditSettings(QDialog, Ui_MidiSettingsDialog):
             self._midiOnBox.setChecked(False)
 
     def _openNewMidi(self, deviceId):
-        del self._midiInput
-        if deviceId == -1:
-            self._midiInput = None
-        else:
-            self._midiInput = midi.Input(deviceId, 0)
+        self._midiInput = deviceId
         self._lastMidi = deviceId
 
     def _itemDoubleClicked(self, item):
         column = item.column()
         if ((column == 0)
             or (column == 1)
-            or (column == 2 and self._midiInput == None)):
+            or (column == 2 and self._midiInput == -1)):
             return
         actionIndex = item.data(ACTION_ROLE).toInt()[0]
         action = self._settings[actionIndex]
@@ -120,15 +115,13 @@ class EditSettings(QDialog, Ui_MidiSettingsDialog):
         self.reject()
 
     def accept(self):
-        del self._midiInput
         for action in self._settings.iterActions():
             self._settings.setMidi(action, self._newMidi.get(action, None))
-        if self._midiOnBox.isChecked() and self._lastMidi != -1:
-            self._settings.openMidiDevice(self._lastMidi)
+        if self._midiOnBox.isChecked() and self._midiInput != -1:
+            self._settings.openMidiDevice(self._midiInput)
         super(EditSettings, self).accept()
 
     def reject(self):
-        del self._midiInput
         if self._originalMidi != -1:
             self._settings.openMidiDevice(self._originalMidi)
         super(EditSettings, self).reject()

@@ -5,34 +5,8 @@ Created on 27 Jan 2012
 
 '''
 
-from pygame import midi
-from PyQt4.QtCore import QThread, pyqtSignal
 from PyQt4.QtGui import QKeySequence
-
-class MidiControlThread(QThread):
-    def __init__(self, deviceId):
-        self._deviceId = deviceId
-        self._running = False
-        super(MidiControlThread, self).__init__()
-
-    midiReceived = pyqtSignal(list)
-
-    def run(self):
-        self._running = True
-        midiIn = midi.Input(self._deviceId, 0)
-        while self._running:
-            self.msleep(10)
-            while midiIn.poll():
-                midiData = midiIn.read(1)[0][0]
-                print ["%02x" % x for x in midiData]
-                self.midiReceived.emit(midiData)
-        del midiIn
-
-    def close(self):
-        self._running = False
-
-class MidiMessage(object):
-    pass
+from midiMessages import MidiControlThread
 
 class ActionPair(object):
     def __init__(self, actionOn, actionOff, shortcut):
