@@ -23,7 +23,7 @@ from PyQt4.QtGui import QGraphicsScene, QPen, QBrush
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.Qt import Qt, QTimer
 
-class MarkedScene(QGraphicsScene):
+class MarkedScene(QGraphicsScene): #IGNORE:R0902
     '''
     classdocs
     '''
@@ -41,9 +41,7 @@ class MarkedScene(QGraphicsScene):
         self._begin = None
         self._end = None
         self._selection = None
-        self._windowRange = 0, 0
         self._total = 0
-        self._zoom = 1
         self.setSceneRect(0, 0, 0, 100)
         self._flasher = self.addRect(0, 0, 0, 0, pen = Qt.blue, brush = Qt.blue)
         self._flasher.setVisible(False)
@@ -171,7 +169,7 @@ class MarkedScene(QGraphicsScene):
         self._flasher.setVisible(True)
         QTimer.singleShot(100, lambda : self._flasher.setVisible(False))
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event): #IGNORE:R0201
         event.accept()
 
     def mouseReleaseEvent(self, event):
@@ -188,14 +186,13 @@ class MarkedScene(QGraphicsScene):
             event.ignore()
 
     def setZoom(self, zoom):
-        self._zoom = zoom
         rect = self._theView.rect()
         rect.setWidth(self._total / zoom + 2)
         self._theView.setRect(rect)
         self._theView.setVisible(zoom > 1)
 
-    def setWindow(self, topLeft):
-        if self._zoom > 1:
+    def setWindow(self, topLeft, zoom):
+        if zoom > 1:
             rect = self._theView.rect()
             topLeft.setX(topLeft.x() - 1)
             topLeft.setY(topLeft.y() - 1)

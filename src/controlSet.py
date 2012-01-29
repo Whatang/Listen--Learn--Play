@@ -6,7 +6,8 @@ Created on 27 Jan 2012
 '''
 
 from PyQt4.QtGui import QKeySequence
-from midiMessages import MidiControlThread, MidiRecogniser, MidiMessage
+from midiMessages import (MidiControlThread, MidiRecogniser,
+                          MidiMessage, SysExMessage)
 
 class AbstractOperation(object):
     def shortcut(self):
@@ -167,7 +168,9 @@ class ControlSet(object):
         return self._midi[action].unparamString()
 
     def isValidMidi(self, action, midiMsg):
-        if action in self._actionPairs:
+        if isinstance(midiMsg, SysExMessage):
+            return False
+        elif action in self._actionPairs:
             return isinstance(midiMsg, PairedMidi)
         else:
             return isinstance(midiMsg, MidiMessage)

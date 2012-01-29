@@ -30,7 +30,7 @@ sys.path.append("Images")
 import pygame
 from pygame import midi
 
-from ui_llp import Ui_MainWindow
+from ui_llp import Ui_LlpMainWindow
 from MarkedScene import MarkedScene
 from controlSet import ControlSet
 from editControls import EditControlsDialog
@@ -41,7 +41,7 @@ SPOOL_INTERVAL = 1
 MIN_ZOOM = 1
 MAX_ZOOM = 16
 
-class LlpMainWindow(QMainWindow, Ui_MainWindow):
+class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
 
     def __init__(self, parent = None):
         super(LlpMainWindow, self).__init__(parent)
@@ -133,7 +133,8 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._controls.addSingleAction(self.actionVolumeUp, "Volume Up")
         self._controls.addParameterAction(self._setVolume, "Set Volume", 0, 1)
         self._controls.addSingleAction(self.actionVolumeDown, "Volume Down")
-        self._controls.addParameterAction(self._setPlaybackTime, "Set playback time", 0, 1)
+        self._controls.addParameterAction(self._setPlaybackTime,
+                                          "Set playback time", 0, 1)
 
 
 
@@ -509,7 +510,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
 
     def _setWindow(self, unusedValue):
         topLeft = self.markView.mapToScene(0, 0)
-        self._scene.setWindow(topLeft)
+        self._scene.setWindow(topLeft, self._zoom)
 
     @pyqtSignature("")
     def on_settingsButton_clicked(self):

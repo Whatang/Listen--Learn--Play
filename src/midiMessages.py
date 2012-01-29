@@ -27,7 +27,7 @@ class MidiMessage(object):
     def identifyingSequence(self):
         raise NotImplementedError()
 
-    def hasFreeParameter(self):
+    def hasFreeParameter(self): #IGNORE:R0201
         return True
 
     def makeParametrised(self):
@@ -197,7 +197,8 @@ class MidiControlThread(QThread):
                         index = -1
                         while index > -4 and midiData[index] != 0:
                             index -= 1
-                        hasSysEx = hasSysEx + midiData[:index] + [midiData[index]]
+                        hasSysEx = (hasSysEx +
+                                    midiData[:index] + [midiData[index]])
                         if hasSysEx[-1] == 0xF7:
                             msg = SysExMessage(*hasSysEx)
                         else:

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>LlpMainWindow</class>
+ <widget class="QMainWindow" name="LlpMainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -1542,7 +1542,7 @@ p, li { white-space: pre-wrap; }
   <connection>
    <sender>actionExit</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>LlpMainWindow</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
