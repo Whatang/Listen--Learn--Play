@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MidiSettingsDialog</class>
- <widget class="QDialog" name="MidiSettingsDialog">
+ <class>EditControlsDialog</class>
+ <widget class="QDialog" name="EditControlsDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -185,7 +185,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>MidiSettingsDialog</receiver>
+   <receiver>EditControlsDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -201,7 +201,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>MidiSettingsDialog</receiver>
+   <receiver>EditControlsDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

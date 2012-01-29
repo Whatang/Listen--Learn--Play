@@ -19,9 +19,9 @@ def getInputDevices():
         if isInput:
             yield i, name
 
-from ui_midiSettingsDialog import Ui_MidiSettingsDialog
+from ui_editControlsDialog import Ui_EditControlsDialog
 
-class EditSettings(QDialog, Ui_MidiSettingsDialog):
+class EditControlsDialog(QDialog, Ui_EditControlsDialog):
     '''
     classdocs
     '''
@@ -31,7 +31,7 @@ class EditSettings(QDialog, Ui_MidiSettingsDialog):
         '''
         Constructor
         '''
-        super(EditSettings, self).__init__(parent)
+        super(EditControlsDialog, self).__init__(parent)
         self.setupUi(self)
         self._controls = controls
         self._newMidi = dict((action, controls.getMidi(action))
@@ -119,9 +119,9 @@ class EditSettings(QDialog, Ui_MidiSettingsDialog):
             self._controls.setMidi(action, self._newMidi.get(action, None))
         if self._midiOnBox.isChecked() and self._midiInput != -1:
             self._controls.openMidiDevice(self._midiInput)
-        super(EditSettings, self).accept()
+        super(EditControlsDialog, self).accept()
 
     def reject(self):
         if self._originalMidi != -1:
             self._controls.openMidiDevice(self._originalMidi)
-        super(EditSettings, self).reject()
+        super(EditControlsDialog, self).reject()

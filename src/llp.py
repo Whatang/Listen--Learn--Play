@@ -33,7 +33,7 @@ from pygame import midi
 from ui_llp import Ui_MainWindow
 from MarkedScene import MarkedScene
 from controlSet import ControlSet
-from editControls import EditSettings
+from editControls import EditControlsDialog
 
 WINDOW_TITLE = "Listen, Learn, Play"
 TICK_INTERVAL = 25
@@ -507,7 +507,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSignature("")
     def on_settingsButton_clicked(self):
-        dlg = EditSettings(self._controls, self)
+        dlg = EditControlsDialog(self._controls, self)
         dlg.exec_()
 
     def closeEvent(self, event):
