@@ -87,19 +87,19 @@ class EditSettings(QDialog, Ui_MidiSettingsDialog):
         self._populateMidiInputs()
 
     def _selectNewMidi(self, index):
-        device_id = self._inputSelector.itemData(index, role = Qt.UserRole)
-        device_id = device_id.toInt()[0]
-        self._openNewMidi(device_id)
-        if device_id == -1:
+        deviceId = self._inputSelector.itemData(index, role = Qt.UserRole)
+        deviceId = deviceId.toInt()[0]
+        self._openNewMidi(deviceId)
+        if deviceId == -1:
             self._midiOnBox.setChecked(False)
 
-    def _openNewMidi(self, device_id):
+    def _openNewMidi(self, deviceId):
         del self._midiInput
-        if device_id == -1:
+        if deviceId == -1:
             self._midiInput = None
         else:
-            self._midiInput = midi.Input(device_id, 0)
-        self._lastMidi = device_id
+            self._midiInput = midi.Input(deviceId, 0)
+        self._lastMidi = deviceId
 
     def _itemDoubleClicked(self, item):
         column = item.column()

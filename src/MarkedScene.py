@@ -136,15 +136,21 @@ class MarkedScene(QGraphicsScene):
             lastMark = mark
         else:
             theMark = self._total
-        if self.begin is not None and position < self.begin and self.begin <= theMark:
+        if (self.begin is not None
+            and position < self.begin
+            and self.begin <= theMark):
             theMark = self.begin
-        elif self.end is not None and position < self.end and self.end <= theMark:
+        elif (self.end is not None
+              and position < self.end
+              and self.end <= theMark):
             theMark = self.end
         return theMark
 
     def _addMark(self, index, position):
         self._marks.insert(index, position)
-        self._markLines[position] = self.addLine(position, 0, position, 100, pen = QPen(Qt.red))
+        self._markLines[position] = self.addLine(position, 0,
+                                                 position, 100,
+                                                 pen = QPen(Qt.red))
         self._markLines[position].setZValue(5)
 
     def toggleMark(self, position):

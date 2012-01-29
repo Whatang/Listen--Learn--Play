@@ -42,13 +42,15 @@ MIN_ZOOM = 1
 MAX_ZOOM = 16
 
 class LlpMainWindow(QMainWindow, Ui_MainWindow):
+
     def __init__(self, parent = None):
         super(LlpMainWindow, self).__init__(parent)
         self.setupUi(self)
-        self.playIcon = QIcon()
-        self.playIcon.addPixmap(QPixmap(":/Images/Play"))
-        self.pauseIcon = QIcon()
-        self.pauseIcon.addPixmap(QPixmap(":/Images/Pause"))
+        # Setup instance variables
+        self._playIcon = QIcon()
+        self._playIcon.addPixmap(QPixmap(":/Images/Play"))
+        self._pauseIcon = QIcon()
+        self._pauseIcon.addPixmap(QPixmap(":/Images/Pause"))
         self._filename = None
         self._total = 0
         self._numDps = 1
@@ -60,32 +62,39 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._wasPlaying = False
         self._zoom = 1
         self._spool = 0
-        self.setSpool()
+        self._controls = ControlSettings()
         self._scene = MarkedScene(self)
         self._media = Phonon.MediaObject(self)
+        self._audio = Phonon.AudioOutput(Phonon.MusicCategory, self)
+        self._hsc = self.markView.horizontalScrollBar()
+        # Connect signals
         self._media.totalTimeChanged.connect(self._totalChanged)
         self._media.stateChanged.connect(self._mediaStateChanged)
         self._media.setTickInterval(TICK_INTERVAL)
         self._media.metaDataChanged.connect(self.printMeta)
-        self._audio = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self._media.tick.connect(self._tick)
         self._media.prefinishMarkReached.connect(self._prefinish)
         self._media.finished.connect(self._finish)
-        Phonon.createPath(self._media, self._audio)
-        self.volumeSlider.setAudioOutput(self._audio)
-        self.markView.setScene(self._scene)
-        self.globalView.setScene(self._scene)
-        self._hsc = self.markView.horizontalScrollBar()
         self._hsc.valueChanged.connect(self._setWindow)
         self._scene.currentChanged.connect(self.setCurrent)
-        self._tick(0)
-        self._checkButtons()
+        self.volumeSlider.setAudioOutput(self._audio)
         self.actionStartRewind.triggered.connect(self.on_rewindButton_pressed)
         self.actionEndRewind.triggered.connect(self.on_rewindButton_released)
         self.actionStartForward.triggered.connect(self.on_forwardButton_pressed)
         self.actionEndForward.triggered.connect(self.on_forwardButton_released)
-        self.addActions([self.actionPlay, self.actionMark,
-                         self.actionMark_2, self.actionCountIn,
+        # Final setup
+        self.markView.setScene(self._scene)
+        self.globalView.setScene(self._scene)
+        Phonon.createPath(self._media, self._audio)
+        self._setSpool()
+        self._tick(0)
+        self._checkButtons()
+        self._setupActions()
+        self.grabKeyboard()
+
+    def _setupActions(self):
+        self.addActions([self.actionPlay, self.actionCountIn,
+                         self.actionMark, self.actionMark_2,
                          self.actionHome, self.actionEnd,
                          self.actionNextMark, self.actionPreviousMark,
                          self.actionLoop, self.actionSelection,
@@ -96,23 +105,20 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
                          self.actionSetBegin, self.actionSetBegin_2,
                          self.actionSetEnd, self.actionSetEnd_2,
                          self.actionTrack])
-        self._controls = ControlSettings()
         self._controls.addAction(self.actionHome, "Go to start")
         self._controls.addAction(self.actionPlay, "Play/pause playback")
         self._controls.addAction(self.actionEnd, "Go to end")
         self._controls.addAction(self.actionMark, "Set/delete mark")
         self._controls.addAction(self.actionPreviousMark,
                                  "Go to previous mark")
-        self._controls.addAction(self.actionNextMark,
-                                 "Go to next mark")
+        self._controls.addAction(self.actionNextMark, "Go to next mark")
         self._controls.addAction(self.actionSetBegin, "Set selection start")
         self._controls.addAction(self.actionSetBegin, "Set selection end")
         self._controls.addAction(self.actionCountIn, "Start count in")
         self._controls.addAction(self.actionLoop, "Toggle looping")
         self._controls.addAction(self.actionSelection,
                                  "Toggle song/selection playback")
-        self._controls.addAction(self.actionTrack,
-                                 "Toggle playback tracking")
+        self._controls.addAction(self.actionTrack, "Toggle playback tracking")
         self._controls.addAction(self.actionToggleMute, "Toggle Mute")
         self._controls.addAction(self.actionZoomIn, "Zoom In")
         self._controls.addAction(self.actionZoomOut, "Zoom Out")
@@ -122,7 +128,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._controls.addActionPair(self.actionStartForward,
                                      self.actionEndForward,
                                      Qt.Key_Right, "Fast Forward")
-        self.grabKeyboard()
+
 
 
     def printMeta(self):
@@ -188,12 +194,12 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             if (state == Phonon.PlayingState
                 or ((self._rewinding or self._forwarding)
                     and self._wasPlaying)):
-                self.playButton.setIcon(self.pauseIcon)
+                self.playButton.setIcon(self._pauseIcon)
                 self.countButton.setEnabled(False)
                 self.selectionButton.setEnabled(False)
                 self.loopButton.setEnabled(False)
             else:
-                self.playButton.setIcon(self.playIcon)
+                self.playButton.setIcon(self._playIcon)
                 self.countButton.setEnabled(True)
                 self.selectionButton.setEnabled(True)
                 self.loopButton.setEnabled(True)
@@ -447,11 +453,11 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         if zoom is not None:
             self._zoom = zoom
             self._scene.setZoom(zoom)
-        self.setSpool()
+        self._setSpool()
         self._checkZoomButtons()
         self._doTracking()
 
-    def setSpool(self):
+    def _setSpool(self):
         if self._total > 0:
             self._spool = (SPOOL_INTERVAL / 100.0) * (self._total / self._zoom)
         else:

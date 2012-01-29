@@ -15,7 +15,7 @@ class MidiControlThread(QThread):
         self._running = False
         super(MidiControlThread, self).__init__()
 
-    midiMessage = pyqtSignal(list)
+    midiReceived = pyqtSignal(list)
 
     def run(self):
         self._running = True
@@ -25,11 +25,14 @@ class MidiControlThread(QThread):
             while midiIn.poll():
                 midiData = midiIn.read(1)[0][0]
                 print ["%02x" % x for x in midiData]
-                self.midiMessage.emit(midiData)
+                self.midiReceived.emit(midiData)
         del midiIn
 
     def close(self):
         self._running = False
+
+class MidiMessage(object):
+    pass
 
 class ActionPair(object):
     def __init__(self, actionOn, actionOff, shortcut):
@@ -134,12 +137,12 @@ class ControlSettings(object):
             raise KeyError("Unrecognised action")
         return str(midiData)
 
-    def openMidiDevice(self, device_id):
-        self.midiDevice = device_id
+    def openMidiDevice(self, deviceId):
+        self.midiDevice = deviceId
         if self._midiThread is not None:
             self.closeMidiDevice()
-        self._midiThread = MidiControlThread(device_id)
-        self._midiThread.midiMessage.connect(self.midiToAction)
+        self._midiThread = MidiControlThread(deviceId)
+        self._midiThread.midiReceived.connect(self.midiToAction)
         self._midiThread.start()
 
     def closeMidiDevice(self):
