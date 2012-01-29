@@ -116,6 +116,12 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._controls.addAction(self.actionToggleMute, "Toggle Mute")
         self._controls.addAction(self.actionZoomIn, "Zoom In")
         self._controls.addAction(self.actionZoomOut, "Zoom Out")
+        self._controls.addActionPair(self.actionStartRewind,
+                                     self.actionEndRewind,
+                                     Qt.Key_Left, "Rewind")
+        self._controls.addActionPair(self.actionStartForward,
+                                     self.actionEndForward,
+                                     Qt.Key_Right, "Fast Forward")
         self.grabKeyboard()
 
 

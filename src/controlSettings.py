@@ -5,12 +5,9 @@ Created on 27 Jan 2012
 
 '''
 
-
-NORMAL = 0
-SET_PARAMETER = 1
-
 from pygame import midi
 from PyQt4.QtCore import QThread, pyqtSignal
+from PyQt4.QtGui import QKeySequence
 
 class MidiControlThread(QThread):
     def __init__(self, deviceId):
@@ -34,6 +31,26 @@ class MidiControlThread(QThread):
     def close(self):
         self._running = False
 
+class ActionPair(object):
+    def __init__(self, actionOn, actionOff, shortcut):
+        self.actionOn = actionOn
+        self.actionOff = actionOff
+        self._shortcut = QKeySequence(shortcut)
+
+    def shortcut(self):
+        return self._shortcut
+
+
+class ParameterAction(object):
+    def __init__(self, method):
+        self._method = method
+
+    def setValue(self, value):
+        self._method(value)
+
+    def shortcut(self):
+        return None
+
 
 class ControlSettings(object):
     '''
@@ -50,13 +67,25 @@ class ControlSettings(object):
         self._actions = []
         self._descriptions = {}
         self._midi = {}
-        self._actionTypes = {}
+        self._actionPairs = set()
+        self._parameterActions = set()
+        self._shortcuts = {}
 
-    def addAction(self, action, description, actionType = NORMAL):
+    def addAction(self, action, description):
         if action not in self._actions:
             self._actions.append(action)
             self._descriptions[action] = description
-            self._actionTypes[action] = actionType
+            self._shortcuts[action] = action.shortcut()
+
+    def addActionPair(self, actionOn, actionOff, shortcut, description):
+        actionPair = ActionPair(actionOn, actionOff, shortcut)
+        self._actionPairs.add(actionPair)
+        self.addAction(actionPair, description)
+
+    def addParameterAction(self, method, description):
+        parameterAction = ParameterAction(method)
+        self._parameterActions.add(parameterAction)
+        self.addAction(parameterAction, description)
 
     def __getitem__(self, index):
         return self._actions[index]
@@ -73,7 +102,7 @@ class ControlSettings(object):
     def getShortcut(self, action):
         if action not in self._descriptions:
             raise KeyError("Unrecognised action")
-        return action.shortcut()
+        return self._shortcuts[action]
 
     def setShortcut(self, action, shortcut):
         if action not in self._descriptions:
@@ -120,7 +149,17 @@ class ControlSettings(object):
 
     def midiToAction(self, midiData):
         for action in self.iterActions():
-            if self._midi.get(action, None) == midiData:
-                action.trigger()
+            if self._midiMatchAndTrigger(action, midiData):
+                break
 
+    def _midiMatchAndTrigger(self, action, midiData):
+        if action in self._actionPairs:
+            pass
+        elif action in self._parameterActions:
+            pass
+        else:
+            if action in self._midi and self._midi[action] == midiData:
+                action.trigger()
+                return True
+        return False
 
