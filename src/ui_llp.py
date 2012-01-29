@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\LLP\src\llp.ui'
 #
-# Created: Fri Jan 27 20:49:41 2012
+# Created: Sat Jan 28 19:56:01 2012
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -560,6 +560,14 @@ class Ui_MainWindow(object):
         self.actionSetEnd_2.setObjectName(_fromUtf8("actionSetEnd_2"))
         self.actionTrack = QtGui.QAction(MainWindow)
         self.actionTrack.setObjectName(_fromUtf8("actionTrack"))
+        self.actionStartRewind = QtGui.QAction(MainWindow)
+        self.actionStartRewind.setObjectName(_fromUtf8("actionStartRewind"))
+        self.actionEndRewind = QtGui.QAction(MainWindow)
+        self.actionEndRewind.setObjectName(_fromUtf8("actionEndRewind"))
+        self.actionStartForward = QtGui.QAction(MainWindow)
+        self.actionStartForward.setObjectName(_fromUtf8("actionStartForward"))
+        self.actionEndForward = QtGui.QAction(MainWindow)
+        self.actionEndForward.setObjectName(_fromUtf8("actionEndForward"))
 
         self.retranslateUi(MainWindow)
         QtCore.QObject.connect(self.actionExit, QtCore.SIGNAL(_fromUtf8("triggered()")), MainWindow.close)
@@ -734,6 +742,10 @@ class Ui_MainWindow(object):
         self.actionSetEnd_2.setShortcut(QtGui.QApplication.translate("MainWindow", "Alt+Enter", None, QtGui.QApplication.UnicodeUTF8))
         self.actionTrack.setText(QtGui.QApplication.translate("MainWindow", "track", None, QtGui.QApplication.UnicodeUTF8))
         self.actionTrack.setShortcut(QtGui.QApplication.translate("MainWindow", "T", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionStartRewind.setText(QtGui.QApplication.translate("MainWindow", "startRewind", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionEndRewind.setText(QtGui.QApplication.translate("MainWindow", "endRewind", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionStartForward.setText(QtGui.QApplication.translate("MainWindow", "startForward", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionEndForward.setText(QtGui.QApplication.translate("MainWindow", "endForward", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import phonon
 import llp_rc

@@ -24,7 +24,7 @@ import sys
 import os
 from PyQt4.QtGui import (QApplication, QMainWindow, QDesktopServices,
                          QFileDialog, QIcon, QPixmap, QTransform)
-from PyQt4.QtCore import pyqtSignature, QTimer
+from PyQt4.QtCore import pyqtSignature, QTimer, Qt
 from PyQt4.phonon import Phonon
 sys.path.append("Images")
 import pygame
@@ -81,6 +81,10 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._scene.currentChanged.connect(self.setCurrent)
         self._tick(0)
         self._checkButtons()
+        self.actionStartRewind.triggered.connect(self.on_rewindButton_pressed)
+        self.actionEndRewind.triggered.connect(self.on_rewindButton_released)
+        self.actionStartForward.triggered.connect(self.on_forwardButton_pressed)
+        self.actionEndForward.triggered.connect(self.on_forwardButton_released)
         self.addActions([self.actionPlay, self.actionMark,
                          self.actionMark_2, self.actionCountIn,
                          self.actionHome, self.actionEnd,
@@ -113,6 +117,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._controls.addAction(self.actionToggleMute, "Toggle Mute")
         self._controls.addAction(self.actionZoomIn, "Zoom In")
         self._controls.addAction(self.actionZoomOut, "Zoom Out")
+        self.grabKeyboard()
 
 
     def printMeta(self):
@@ -221,12 +226,13 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSignature("")
     def on_rewindButton_pressed(self):
-        self._rewinding = QTimer(self)
-        self._rewinding.setInterval(TICK_INTERVAL)
-        self._rewinding.timeout.connect(self._rewinder)
-        self._wasPlaying = (self._media.state() == Phonon.PlayingState)
-        self._media.pause()
-        self._rewinding.start()
+        if not self._rewinding:
+            self._rewinding = QTimer(self)
+            self._wasPlaying = (self._media.state() == Phonon.PlayingState)
+            self._rewinding.setInterval(TICK_INTERVAL)
+            self._rewinding.timeout.connect(self._rewinder)
+            self._media.pause()
+            self._rewinding.start()
 
     def _rewinder(self):
         newPos = max(0, self._oldMs - self._spool)
@@ -236,17 +242,16 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
     def on_rewindButton_released(self):
         if self._rewinding:
             self._rewinding.stop()
-        self._rewinding = None
-        if self._wasPlaying:
-            self._media.play()
-
+            if self._wasPlaying:
+                self._media.play()
+            self._rewinding = None
 
     @pyqtSignature("")
     def on_forwardButton_pressed(self):
+        self._wasPlaying = (self._media.state() == Phonon.PlayingState)
         self._forwarding = QTimer(self)
         self._forwarding.setInterval(TICK_INTERVAL)
         self._forwarding.timeout.connect(self._forwarder)
-        self._wasPlaying = (self._media.state() == Phonon.PlayingState)
         self._media.pause()
         self._forwarding.start()
 
@@ -259,9 +264,9 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
     def on_forwardButton_released(self):
         if self._forwarding:
             self._forwarding.stop()
-        self._forwarding = None
-        if self._wasPlaying:
-            self._media.play()
+            if self._wasPlaying:
+                self._media.play()
+            self._forwarding = None
 
     def _tick(self, ms):
         seconds = ms / 1000.0
@@ -491,6 +496,35 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
     def closeEvent(self, event):
         self._controls.closeMidiDevice()
         super(LlpMainWindow, self).closeEvent(event)
+
+    def keyPressEvent(self, event):
+        if event.isAutoRepeat():
+            event.accept()
+        elif event.key() == Qt.Key_Left:
+            if not self._rewinding:
+                self.actionStartRewind.trigger()
+            event.accept()
+        elif event.key() == Qt.Key_Right:
+            if not self._forwarding:
+                self.actionStartForward.trigger()
+            event.accept()
+        else:
+            event.ignore()
+
+    def keyReleaseEvent(self, event):
+        if event.isAutoRepeat():
+            event.ignore()
+        elif event.key() == Qt.Key_Left:
+            if self._rewinding:
+                self.actionEndRewind.trigger()
+            event.accept()
+        elif event.key() == Qt.Key_Right:
+            if self._forwarding:
+                self.actionEndForward.trigger()
+            event.accept()
+        else:
+            event.ignore()
+
 
 def main():
     import ctypes

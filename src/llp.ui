@@ -1507,6 +1507,26 @@ p, li { white-space: pre-wrap; }
     <string>T</string>
    </property>
   </action>
+  <action name="actionStartRewind">
+   <property name="text">
+    <string>startRewind</string>
+   </property>
+  </action>
+  <action name="actionEndRewind">
+   <property name="text">
+    <string>endRewind</string>
+   </property>
+  </action>
+  <action name="actionStartForward">
+   <property name="text">
+    <string>startForward</string>
+   </property>
+  </action>
+  <action name="actionEndForward">
+   <property name="text">
+    <string>endForward</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
