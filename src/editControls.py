@@ -53,14 +53,17 @@ class EditControlsDialog(QDialog, Ui_EditControlsDialog):
         self._populateMidiInputs()
         self._settingsTable.setSortingEnabled(False)
         self._settingsTable.setRowCount(len(controls))
-        def addItem(r, c, text):
+        def addItem(r, c, text, tip = None):
             item = QTableWidgetItem(text)
+            if tip:
+                item.setToolTip(tip)
             item.setData(ACTION_ROLE, QVariant(r))
             self._settingsTable.setItem(r, c, item)
         for row, action in enumerate(controls.iterActions()):
             addItem(row, 0, controls.getDescription(action))
             addItem(row, 1, controls.getShortcutString(action))
-            addItem(row, 2, controls.getMidiAsString(action))
+            addItem(row, 2, controls.getMidiAsString(action),
+                    "Double click to edit assigned MIDI control")
         self._settingsTable.setSortingEnabled(True)
         self._refreshButton.clicked.connect(self._populateMidiInputs)
         self._inputSelector.currentIndexChanged.connect(self._selectNewMidi)
