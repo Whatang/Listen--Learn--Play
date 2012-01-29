@@ -1238,6 +1238,32 @@ p, li { white-space: pre-wrap; }
             </spacer>
            </item>
            <item>
+            <widget class="QPushButton" name="settingsButton">
+             <property name="minimumSize">
+              <size>
+               <width>28</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>28</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="Images/llp.qrc">
+               <normaloff>:/Images/Settings</normaloff>:/Images/Settings</iconset>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="openButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1479,6 +1505,26 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="shortcut">
     <string>T</string>
+   </property>
+  </action>
+  <action name="actionStartRewind">
+   <property name="text">
+    <string>startRewind</string>
+   </property>
+  </action>
+  <action name="actionEndRewind">
+   <property name="text">
+    <string>endRewind</string>
+   </property>
+  </action>
+  <action name="actionStartForward">
+   <property name="text">
+    <string>startForward</string>
+   </property>
+  </action>
+  <action name="actionEndForward">
+   <property name="text">
+    <string>endForward</string>
    </property>
   </action>
  </widget>

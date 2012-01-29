@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="Images">
+    <file alias="Refresh">arrow-circle-double.png</file>
+    <file alias="Settings">gear.png</file>
     <file alias="Link">plug-connect.png</file>
     <file alias="Unlink">plug-disconnect.png</file>
     <file alias="LLP">ear-listen-large.png</file>

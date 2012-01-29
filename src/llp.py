@@ -24,11 +24,16 @@ import sys
 import os
 from PyQt4.QtGui import (QApplication, QMainWindow, QDesktopServices,
                          QFileDialog, QIcon, QPixmap, QTransform)
-from PyQt4.QtCore import pyqtSignature, QTimer
+from PyQt4.QtCore import pyqtSignature, QTimer, Qt
 from PyQt4.phonon import Phonon
 sys.path.append("Images")
+import pygame
+from pygame import midi
+
 from ui_llp import Ui_MainWindow
 from MarkedScene import MarkedScene
+from controlSettings import ControlSettings
+from editSettings import EditSettings
 
 WINDOW_TITLE = "Listen, Learn, Play"
 TICK_INTERVAL = 25
@@ -71,10 +76,15 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self.markView.setScene(self._scene)
         self.globalView.setScene(self._scene)
         self._hsc = self.markView.horizontalScrollBar()
-        self._hsc.valueChanged.connect(self._setWindow)
+        self._hsc.valueChanged.connect(self._scene.setWindow)
+        self._hsc.rangeChanged.connect(self._scene.setWindowRange)
         self._scene.currentChanged.connect(self.setCurrent)
         self._tick(0)
         self._checkButtons()
+        self.actionStartRewind.triggered.connect(self.on_rewindButton_pressed)
+        self.actionEndRewind.triggered.connect(self.on_rewindButton_released)
+        self.actionStartForward.triggered.connect(self.on_forwardButton_pressed)
+        self.actionEndForward.triggered.connect(self.on_forwardButton_released)
         self.addActions([self.actionPlay, self.actionMark,
                          self.actionMark_2, self.actionCountIn,
                          self.actionHome, self.actionEnd,
@@ -87,6 +97,28 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
                          self.actionSetBegin, self.actionSetBegin_2,
                          self.actionSetEnd, self.actionSetEnd_2,
                          self.actionTrack])
+        self._controls = ControlSettings()
+        self._controls.addAction(self.actionHome, "Go to start")
+        self._controls.addAction(self.actionPlay, "Play/pause playback")
+        self._controls.addAction(self.actionEnd, "Go to end")
+        self._controls.addAction(self.actionMark, "Set/delete mark")
+        self._controls.addAction(self.actionPreviousMark,
+                                 "Go to previous mark")
+        self._controls.addAction(self.actionNextMark,
+                                 "Go to next mark")
+        self._controls.addAction(self.actionSetBegin, "Set selection start")
+        self._controls.addAction(self.actionSetBegin, "Set selection end")
+        self._controls.addAction(self.actionCountIn, "Start count in")
+        self._controls.addAction(self.actionLoop, "Toggle looping")
+        self._controls.addAction(self.actionSelection,
+                                 "Toggle song/selection playback")
+        self._controls.addAction(self.actionTrack,
+                                 "Toggle playback tracking")
+        self._controls.addAction(self.actionToggleMute, "Toggle Mute")
+        self._controls.addAction(self.actionZoomIn, "Zoom In")
+        self._controls.addAction(self.actionZoomOut, "Zoom Out")
+        self.grabKeyboard()
+
 
     def printMeta(self):
         for k, v in self._media.metaData().iteritems():
@@ -194,12 +226,13 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSignature("")
     def on_rewindButton_pressed(self):
-        self._rewinding = QTimer(self)
-        self._rewinding.setInterval(TICK_INTERVAL)
-        self._rewinding.timeout.connect(self._rewinder)
-        self._wasPlaying = (self._media.state() == Phonon.PlayingState)
-        self._media.pause()
-        self._rewinding.start()
+        if not self._rewinding:
+            self._rewinding = QTimer(self)
+            self._wasPlaying = (self._media.state() == Phonon.PlayingState)
+            self._rewinding.setInterval(TICK_INTERVAL)
+            self._rewinding.timeout.connect(self._rewinder)
+            self._media.pause()
+            self._rewinding.start()
 
     def _rewinder(self):
         newPos = max(0, self._oldMs - self._spool)
@@ -209,17 +242,16 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
     def on_rewindButton_released(self):
         if self._rewinding:
             self._rewinding.stop()
-        self._rewinding = None
-        if self._wasPlaying:
-            self._media.play()
-
+            if self._wasPlaying:
+                self._media.play()
+            self._rewinding = None
 
     @pyqtSignature("")
     def on_forwardButton_pressed(self):
+        self._wasPlaying = (self._media.state() == Phonon.PlayingState)
         self._forwarding = QTimer(self)
         self._forwarding.setInterval(TICK_INTERVAL)
         self._forwarding.timeout.connect(self._forwarder)
-        self._wasPlaying = (self._media.state() == Phonon.PlayingState)
         self._media.pause()
         self._forwarding.start()
 
@@ -232,9 +264,9 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
     def on_forwardButton_released(self):
         if self._forwarding:
             self._forwarding.stop()
-        self._forwarding = None
-        if self._wasPlaying:
-            self._media.play()
+            if self._wasPlaying:
+                self._media.play()
+            self._forwarding = None
 
     def _tick(self, ms):
         seconds = ms / 1000.0
@@ -265,11 +297,10 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             self.totalLabel.setText("%.2f" % (total / 1000.0))
             self._scene.setTotal(total)
             self._tick(self._media.currentTime())
-            self.markView.setViewportMargins(0, 0, 0, 0)
             self.markView.setSceneRect(self._scene.sceneRect())
             self.globalView.setSceneRect(self._scene.sceneRect())
             sx = (float(self.globalView.viewport().width() - 1)
-                  / (self._scene.width()))
+                  / self._scene.width())
             height = self.globalView.viewport().height() - 1
             sy = float(height) / self._scene.height()
             transform = QTransform(sx, 0, 0,
@@ -289,7 +320,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self.setZoom()
 
     def _changeTransform(self):
-        sx = (float(self._zoom * (self.markView.viewport().width()))
+        sx = (float(self._zoom * self.markView.viewport().width() - 1)
               / self._scene.width())
         height = self.markView.viewport().height() - 1
         sy = float(height) / self._scene.height()
@@ -297,8 +328,6 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
                                0, sy, 0,
                                0, 0, 1)
         self.markView.setTransform(transform)
-        self.markView.setSceneRect(self._scene.sceneRect())
-
 
     @pyqtSignature("")
     def on_actionSetBegin_triggered(self):
@@ -459,9 +488,43 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         if self.trackButton.isEnabled() and self.trackButton.isChecked():
             self.markView.centerOn(self._oldMs, 0)
 
-    def _setWindow(self, unusedValue):
-        topLeft = self.markView.mapToScene(0, 0)
-        self._scene.setWindow(topLeft)
+    @pyqtSignature("")
+    def on_settingsButton_clicked(self):
+        dlg = EditSettings(self._controls, self)
+        dlg.exec_()
+
+    def closeEvent(self, event):
+        self._controls.closeMidiDevice()
+        super(LlpMainWindow, self).closeEvent(event)
+
+    def keyPressEvent(self, event):
+        if event.isAutoRepeat():
+            event.accept()
+        elif event.key() == Qt.Key_Left:
+            if not self._rewinding:
+                self.actionStartRewind.trigger()
+            event.accept()
+        elif event.key() == Qt.Key_Right:
+            if not self._forwarding:
+                self.actionStartForward.trigger()
+            event.accept()
+        else:
+            event.ignore()
+
+    def keyReleaseEvent(self, event):
+        if event.isAutoRepeat():
+            event.ignore()
+        elif event.key() == Qt.Key_Left:
+            if self._rewinding:
+                self.actionEndRewind.trigger()
+            event.accept()
+        elif event.key() == Qt.Key_Right:
+            if self._forwarding:
+                self.actionEndForward.trigger()
+            event.accept()
+        else:
+            event.ignore()
+
 
 def main():
     import ctypes
@@ -475,6 +538,8 @@ def main():
     icon = QIcon()
     icon.addPixmap(QPixmap(":/Images/LLP"))
     app.setWindowIcon(icon)
+    pygame.init()
+    midi.init()
     mainWindow.show()
     app.exec_()
 
