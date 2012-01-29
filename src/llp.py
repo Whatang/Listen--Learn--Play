@@ -32,7 +32,7 @@ from pygame import midi
 
 from ui_llp import Ui_MainWindow
 from MarkedScene import MarkedScene
-from controlSettings import ControlSettings
+from controlSettings import ControlSet
 from editSettings import EditSettings
 
 WINDOW_TITLE = "Listen, Learn, Play"
@@ -62,7 +62,7 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._wasPlaying = False
         self._zoom = 1
         self._spool = 0
-        self._controls = ControlSettings()
+        self._controls = ControlSet()
         self._scene = MarkedScene(self)
         self._media = Phonon.MediaObject(self)
         self._audio = Phonon.AudioOutput(Phonon.MusicCategory, self)

@@ -29,7 +29,7 @@ class ParameterAction(object):
         return None
 
 
-class ControlSettings(object):
+class ControlSet(object):
     '''
     classdocs
     '''

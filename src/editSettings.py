@@ -27,17 +27,17 @@ class EditSettings(QDialog, Ui_MidiSettingsDialog):
     '''
 
 
-    def __init__(self, settings, parent = None):
+    def __init__(self, controls, parent = None):
         '''
         Constructor
         '''
         super(EditSettings, self).__init__(parent)
         self.setupUi(self)
-        self._settings = settings
-        self._newMidi = dict((action, settings.getMidi(action))
-                             for action in settings.iterActions()
-                             if settings.getMidi(action))
-        midiOn = settings.midiDevice != -1
+        self._controls = controls
+        self._newMidi = dict((action, controls.getMidi(action))
+                             for action in controls.iterActions()
+                             if controls.getMidi(action))
+        midiOn = controls.midiDevice != -1
         self._midiOnBox.setChecked(midiOn)
         self._inputSelector.setEnabled(midiOn)
         self._inputLabel.setEnabled(midiOn)
@@ -45,21 +45,21 @@ class EditSettings(QDialog, Ui_MidiSettingsDialog):
         self._midiInput = -1
         self._lastMidi = -1
         self._originalMidi = -1
-        if self._settings.midiDevice != -1:
-            self._originalMidi = self._settings.midiDevice
-            self._settings.closeMidiDevice()
+        if self._controls.midiDevice != -1:
+            self._originalMidi = self._controls.midiDevice
+            self._controls.closeMidiDevice()
             self._openNewMidi(self._originalMidi)
         self._populateMidiInputs()
         self._settingsTable.setSortingEnabled(False)
-        self._settingsTable.setRowCount(len(settings))
+        self._settingsTable.setRowCount(len(controls))
         def addItem(r, c, text):
             item = QTableWidgetItem(text)
             item.setData(ACTION_ROLE, QVariant(r))
             self._settingsTable.setItem(r, c, item)
-        for row, action in enumerate(settings.iterActions()):
-            addItem(row, 0, settings.getDescription(action))
-            addItem(row, 1, settings.getShortcut(action).toString())
-            addItem(row, 2, settings.getMidiAsString(action))
+        for row, action in enumerate(controls.iterActions()):
+            addItem(row, 0, controls.getDescription(action))
+            addItem(row, 1, controls.getShortcut(action).toString())
+            addItem(row, 2, controls.getMidiAsString(action))
         self._settingsTable.setSortingEnabled(True)
         self._refreshButton.clicked.connect(self._populateMidiInputs)
         self._inputSelector.currentIndexChanged.connect(self._selectNewMidi)
@@ -103,25 +103,25 @@ class EditSettings(QDialog, Ui_MidiSettingsDialog):
             or (column == 2 and self._midiInput == -1)):
             return
         actionIndex = item.data(ACTION_ROLE).toInt()[0]
-        action = self._settings[actionIndex]
+        action = self._controls[actionIndex]
         if column == 2:
             # Set MIDI
             dlg = MidiLearnDialog(self._midiInput, self)
             if dlg.exec_():
                 midiData = dlg.getMidiData()
                 self._newMidi[action] = midiData
-                item.setText(self._settings.midiToString(action, midiData))
+                item.setText(self._controls.midiToString(action, midiData))
     def closeEvent(self, unusedEvent):
         self.reject()
 
     def accept(self):
-        for action in self._settings.iterActions():
-            self._settings.setMidi(action, self._newMidi.get(action, None))
+        for action in self._controls.iterActions():
+            self._controls.setMidi(action, self._newMidi.get(action, None))
         if self._midiOnBox.isChecked() and self._midiInput != -1:
-            self._settings.openMidiDevice(self._midiInput)
+            self._controls.openMidiDevice(self._midiInput)
         super(EditSettings, self).accept()
 
     def reject(self):
         if self._originalMidi != -1:
-            self._settings.openMidiDevice(self._originalMidi)
+            self._controls.openMidiDevice(self._originalMidi)
         super(EditSettings, self).reject()
