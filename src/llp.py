@@ -97,6 +97,23 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
         self._controls.addAction(self.actionHome, "Go to start")
         self._controls.addAction(self.actionPlay, "Play/pause playback")
         self._controls.addAction(self.actionEnd, "Go to end")
+        self._controls.addAction(self.actionMark, "Set/delete mark")
+        self._controls.addAction(self.actionPreviousMark,
+                                 "Go to previous mark")
+        self._controls.addAction(self.actionNextMark,
+                                 "Go to next mark")
+        self._controls.addAction(self.actionSetBegin, "Set selection start")
+        self._controls.addAction(self.actionSetBegin, "Set selection end")
+        self._controls.addAction(self.actionCountIn, "Start count in")
+        self._controls.addAction(self.actionLoop, "Toggle looping")
+        self._controls.addAction(self.actionSelection,
+                                 "Toggle song/selection playback")
+        self._controls.addAction(self.actionTrack,
+                                 "Toggle playback tracking")
+        self._controls.addAction(self.actionToggleMute, "Toggle Mute")
+        self._controls.addAction(self.actionZoomIn, "Zoom In")
+        self._controls.addAction(self.actionZoomOut, "Zoom Out")
+
 
     def printMeta(self):
         for k, v in self._media.metaData().iteritems():
@@ -469,8 +486,11 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSignature("")
     def on_settingsButton_clicked(self):
         dlg = EditSettings(self._controls, self)
-        if dlg.exec_():
-            print "OK"
+        dlg.exec_()
+
+    def closeEvent(self, event):
+        self._controls.closeMidiDevice()
+        super(LlpMainWindow, self).closeEvent(event)
 
 def main():
     import ctypes
