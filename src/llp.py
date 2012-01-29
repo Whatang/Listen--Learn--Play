@@ -32,8 +32,8 @@ from pygame import midi
 
 from ui_llp import Ui_MainWindow
 from MarkedScene import MarkedScene
-from controlSettings import ControlSet
-from editSettings import EditSettings
+from controlSet import ControlSet
+from editControls import EditSettings
 
 WINDOW_TITLE = "Listen, Learn, Play"
 TICK_INTERVAL = 25
