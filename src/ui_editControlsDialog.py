@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\Mike_2\Eclipse workspace\LLP\src\editControlsDialog.ui'
 #
-# Created: Sun Jan 29 13:33:11 2012
+# Created: Sun Jan 29 16:55:39 2012
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -50,6 +50,8 @@ class Ui_EditControlsDialog(object):
         self._settingsTable.setDragDropOverwriteMode(False)
         self._settingsTable.setAlternatingRowColors(True)
         self._settingsTable.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
+        self._settingsTable.setTextElideMode(QtCore.Qt.ElideNone)
+        self._settingsTable.setShowGrid(False)
         self._settingsTable.setGridStyle(QtCore.Qt.NoPen)
         self._settingsTable.setWordWrap(False)
         self._settingsTable.setCornerButtonEnabled(False)

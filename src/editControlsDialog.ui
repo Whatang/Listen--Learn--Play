@@ -101,6 +101,12 @@
      <property name="selectionMode">
       <enum>QAbstractItemView::SingleSelection</enum>
      </property>
+     <property name="textElideMode">
+      <enum>Qt::ElideNone</enum>
+     </property>
+     <property name="showGrid">
+      <bool>false</bool>
+     </property>
      <property name="gridStyle">
       <enum>Qt::NoPen</enum>
      </property>

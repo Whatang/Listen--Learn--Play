@@ -10,48 +10,154 @@ from PyQt4.QtCore import QThread, pyqtSignal
 class MidiMessage(object):
     status = None
     typeName = "Unrecognized"
-    def __init__(self, status, data1, data2, *extra):
-        self.channel = status & 0xF
+    def __init__(self, channel, data1, data2, *extra):
+        self.channel = channel & 0xF
         self.data1 = data1
         self.data2 = data2
 
-    def __str__(self):
-        return "%s, Channel %d. Data %d, %d" % (self.typeName,
-                                                self.channel,
-                                                self.data1,
-                                                self.data2)
+    def unparamString(self):
+        return "%s Channel %d: Data %d, %d" % (self.typeName,
+                                               self.channel,
+                                               self.data1,
+                                               self.data2)
 
-class NoteOnMidiMessage(MidiMessage):
-    status = 0x8
-    typeName = "NoteOn"
+    def parameterValue(self):
+        return self.data2
+
+    def identifyingSequence(self):
+        raise NotImplementedError()
+
+    def hasFreeParameter(self):
+        return True
+
+    def makeParametrised(self):
+        return self
 
 class NoteOffMidiMessage(MidiMessage):
-    status = 0x9
+    status = 0x8
     typeName = "NoteOff"
+    def unparamString(self):
+        return "Note %d On, Channel %d" % (self.data1,
+                                           self.channel)
+
+    def identifyingSequence(self):
+        yield self.status
+        yield self.channel
+        yield self.data1
+
+
+
+class NoteOnMidiMessage(MidiMessage):
+    status = 0x9
+    typeName = "NoteOn"
+    def unparamString(self):
+        return "Note %d Off, Channel %d" % (self.data1,
+                                            self.channel)
+
+    def identifyingSequence(self):
+        yield self.status
+        yield self.channel
+        yield self.data1
 
 class PolyphonicAftertouchMidiMessage(MidiMessage):
     status = 0xA
     typeName = "PolyAT"
+    def unparamString(self):
+        return "%s Channel %d, Note %d" % (self.typeName,
+                                           self.channel,
+                                           self.data1)
+
+    def identifyingSequence(self):
+        yield self.status
+        yield self.channel
+        yield self.data1
 
 class ControlMidiMessage(MidiMessage):
     status = 0xB
     typeName = "Control"
+    def unparamString(self):
+        return "%s Channel %d. Controller %d, Value %d" % (self.typeName,
+                                                           self.channel,
+                                                           self.data1,
+                                                           self.data2)
+
+    def identifyingSequence(self):
+        yield self.status
+        yield self.channel
+        yield self.data1
+        yield self.data2
+
+    def hasFreeParameter(self):
+        return False
+
+    def makeParametrised(self):
+        return ParametrisedControlMidiMessage(self.channel, self.data1,
+                                              None)
+
+class ParametrisedControlMidiMessage(ControlMidiMessage):
+    def unparamString(self):
+        return "%s Channel %d. Parametrised Controller %d" % (self.typeName,
+                                                              self.channel,
+                                                              self.data1)
+
+    def identifyingSequence(self):
+        yield self.status
+        yield self.channel
+        yield self.data1
+
+    def hasFreeParameter(self):
+        return True
+
+    def makeParametrised(self):
+        return self
 
 class ProgramMidiMessage(MidiMessage):
     status = 0xC
     typeName = "Program"
+    def unparamString(self):
+        return "%s Channel %d. Program %d" % (self.typeName,
+                                              self.channel,
+                                              self.data1)
+
+    def identifyingSequence(self):
+        yield self.status
+        yield self.channel
+        yield self.data1
 
 class ChannelAftertouchMidiMessage(MidiMessage):
     status = 0xD
     typeName = "ChannelAT"
 
+    def parameterValue(self):
+        return self.data1
+
+    def unparamString(self):
+        return "%s Channel %d." % (self.typeName, self.channel)
+
+    def identifyingSequence(self):
+        yield self.status
+        yield self.channel
+
 class PitchWheelMidiMessage(MidiMessage):
     status = 0xE
     typeName = "PitchWheel"
 
+    def parameterValue(self):
+        return float(self.data1 + (self.data2 << 8)) / 256
+
+    def unparamString(self):
+        return "%s Channel %d." % (self.typeName, self.channel)
+
+    def identifyingSequence(self):
+        yield self.status
+        yield self.channel
+
+
 class SysExMessage(MidiMessage):
     status = 0xF
     typeName = "SysEx"
+    def identifyingSequence(self):
+        raise TypeError()
 
 _MIDIMAP = dict((msgType.status, msgType)
                 for msgType in MidiMessage.__subclasses__()) #IGNORE:E1101
@@ -103,3 +209,44 @@ class MidiControlThread(QThread):
 
     def close(self):
         self._running = False
+
+class MidiRecogniser(object):
+    def __init__(self):
+        self._tree = {}
+
+    def addMessageTarget(self, msg, target):
+        node = self._tree
+        for data in msg.identifyingSequence():
+            if data not in node:
+                node[data] = {}
+            node = node[data]
+        node[-1] = target
+
+    def getTarget(self, msg):
+        node = self._tree
+        for data in msg.identifyingSequence():
+            if data not in node:
+                if -1 in node:
+                    return node[-1]
+                return None
+            node = node[data]
+        return node[-1]
+
+    def removeMessageTarget(self, msg):
+        node = self._tree
+        visited = []
+        for data in msg.identifyingSequence():
+            if data not in node:
+                return
+            visited.append(node)
+            node = node[data]
+        if -1 not in node:
+            return
+        visited.append(node)
+        nodeToDelete = -1
+        while visited:
+            parentNode = visited.pop()
+            parentNode.pop(nodeToDelete)
+            if len(node) != 0:
+                break
+            nodeToDelete = node

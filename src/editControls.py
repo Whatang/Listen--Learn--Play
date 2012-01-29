@@ -4,10 +4,11 @@ Created on 27 Jan 2012
 @author: Mike Thomas
 
 '''
-from PyQt4.QtGui import QDialog, QTableWidgetItem
+from PyQt4.QtGui import QDialog, QTableWidgetItem, QMessageBox
 from PyQt4.QtCore import QVariant, Qt
 from pygame import midi
 from midiLearnDialog import MidiLearnDialog
+from midiLearnPairedDialog import MidiLearnPairedDialog
 
 ACTION_ROLE = Qt.UserRole + 1
 
@@ -58,7 +59,7 @@ class EditControlsDialog(QDialog, Ui_EditControlsDialog):
             self._settingsTable.setItem(r, c, item)
         for row, action in enumerate(controls.iterActions()):
             addItem(row, 0, controls.getDescription(action))
-            addItem(row, 1, controls.getShortcut(action).toString())
+            addItem(row, 1, controls.getShortcutString(action))
             addItem(row, 2, controls.getMidiAsString(action))
         self._settingsTable.setSortingEnabled(True)
         self._refreshButton.clicked.connect(self._populateMidiInputs)
@@ -105,12 +106,25 @@ class EditControlsDialog(QDialog, Ui_EditControlsDialog):
         actionIndex = item.data(ACTION_ROLE).toInt()[0]
         action = self._controls[actionIndex]
         if column == 2:
-            # Set MIDI
-            dlg = MidiLearnDialog(self._midiInput, self)
+            # Learn MIDI
+            if action.numActions() == 1:
+                dlg = MidiLearnDialog(self._midiInput, self)
+            else:
+                dlg = MidiLearnPairedDialog(self._midiInput, self)
             if dlg.exec_():
                 midiData = dlg.getMidiData()
-                self._newMidi[action] = midiData
-                item.setText(self._controls.midiToString(action, midiData))
+                if midiData is None:
+                    self._newMidi[action] = None
+                    item.setText("")
+                elif self._controls.isValidMidi(action, midiData):
+                    midiData = action.unparametrise(midiData)
+                    self._newMidi[action] = midiData
+                    item.setText(midiData.unparamString())
+                else:
+                    QMessageBox.warning(self, "Bad MIDI",
+                                        "The given MIDI message is invalid "
+                                        "for this operation.")
+
     def closeEvent(self, unusedEvent):
         self.reject()
 

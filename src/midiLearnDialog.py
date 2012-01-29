@@ -16,6 +16,7 @@ class MidiLearnDialog(QDialog, Ui_midiLearnDialog):
         self.setupUi(self)
         self.thread = MidiControlThread(deviceId)
         self._midiData = None
+        self.buttonBox.clicked.connect(self._buttonClicked)
 
     def exec_(self):
         self.thread.midiReceived.connect(self._midiReceived)
@@ -38,3 +39,8 @@ class MidiLearnDialog(QDialog, Ui_midiLearnDialog):
 
     def getMidiData(self):
         return self._midiData
+
+    def _buttonClicked(self, button):
+        if button == self.buttonBox.button(self.buttonBox.Discard):
+            self._midiData = None
+            self.accept()

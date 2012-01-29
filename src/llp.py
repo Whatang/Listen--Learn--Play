@@ -105,29 +105,35 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
                          self.actionSetBegin, self.actionSetBegin_2,
                          self.actionSetEnd, self.actionSetEnd_2,
                          self.actionTrack])
-        self._controls.addAction(self.actionHome, "Go to start")
-        self._controls.addAction(self.actionPlay, "Play/pause playback")
-        self._controls.addAction(self.actionEnd, "Go to end")
-        self._controls.addAction(self.actionMark, "Set/delete mark")
-        self._controls.addAction(self.actionPreviousMark,
-                                 "Go to previous mark")
-        self._controls.addAction(self.actionNextMark, "Go to next mark")
-        self._controls.addAction(self.actionSetBegin, "Set selection start")
-        self._controls.addAction(self.actionSetBegin, "Set selection end")
-        self._controls.addAction(self.actionCountIn, "Start count in")
-        self._controls.addAction(self.actionLoop, "Toggle looping")
-        self._controls.addAction(self.actionSelection,
-                                 "Toggle song/selection playback")
-        self._controls.addAction(self.actionTrack, "Toggle playback tracking")
-        self._controls.addAction(self.actionToggleMute, "Toggle Mute")
-        self._controls.addAction(self.actionZoomIn, "Zoom In")
-        self._controls.addAction(self.actionZoomOut, "Zoom Out")
+        self._controls.addSingleAction(self.actionHome, "Go to start")
         self._controls.addActionPair(self.actionStartRewind,
                                      self.actionEndRewind,
                                      Qt.Key_Left, "Rewind")
+        self._controls.addSingleAction(self.actionPlay, "Play/pause playback")
+        self._controls.addSingleAction(self.actionCountIn, "Start count in")
         self._controls.addActionPair(self.actionStartForward,
                                      self.actionEndForward,
                                      Qt.Key_Right, "Fast Forward")
+        self._controls.addSingleAction(self.actionEnd, "Go to end")
+        self._controls.addSingleAction(self.actionMark, "Set/delete mark")
+        self._controls.addSingleAction(self.actionSetBegin,
+                                       "Set selection start")
+        self._controls.addSingleAction(self.actionPreviousMark,
+                                 "Go to previous mark")
+        self._controls.addSingleAction(self.actionSetBegin, "Set selection end")
+        self._controls.addSingleAction(self.actionNextMark, "Go to next mark")
+        self._controls.addSingleAction(self.actionLoop, "Toggle looping")
+        self._controls.addSingleAction(self.actionSelection,
+                                 "Toggle song/selection playback")
+        self._controls.addSingleAction(self.actionTrack,
+                                       "Toggle playback tracking")
+        self._controls.addSingleAction(self.actionZoomIn, "Zoom In")
+        self._controls.addSingleAction(self.actionZoomOut, "Zoom Out")
+        self._controls.addSingleAction(self.actionToggleMute, "Toggle Mute")
+        self._controls.addSingleAction(self.actionVolumeUp, "Volume Up")
+        self._controls.addParameterAction(self._setVolume, "Set Volume", 0, 1)
+        self._controls.addSingleAction(self.actionVolumeDown, "Volume Down")
+        self._controls.addParameterAction(self._setPlaybackTime, "Set playback time", 0, 1)
 
 
 
@@ -541,6 +547,13 @@ class LlpMainWindow(QMainWindow, Ui_MainWindow):
             event.accept()
         else:
             event.ignore()
+
+    def _setVolume(self, value):
+        self._audio.setVolume(value)
+
+    def _setPlaybackTime(self, value):
+        position = int(value * self._total + 0.5)
+        self._media.seek(position)
 
 
 def main():

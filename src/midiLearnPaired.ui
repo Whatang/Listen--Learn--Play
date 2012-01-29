@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>midiLearnDialog</class>
- <widget class="QDialog" name="midiLearnDialog">
+ <class>MidiLearnPairedDialog</class>
+ <widget class="QDialog" name="MidiLearnPairedDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>202</width>
-    <height>81</height>
+    <height>110</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,17 +15,66 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Send a MIDI input now</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0" rowspan="2">
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="1">
+      <widget class="QCheckBox" name="firstMidiBox">
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="text">
+        <string>Send MIDI on data</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2" rowspan="2">
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="1" column="1">
+      <widget class="QCheckBox" name="secondMidiBox">
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="text">
+        <string>Send MIDI off data</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
-    <widget class="QLabel" name="discardMessage">
+    <widget class="QLabel" name="label">
      <property name="text">
       <string>or press Discard to clear MIDI data</string>
      </property>
@@ -81,7 +130,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>midiLearnDialog</receiver>
+   <receiver>MidiLearnPairedDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -97,7 +146,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>midiLearnDialog</receiver>
+   <receiver>MidiLearnPairedDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
