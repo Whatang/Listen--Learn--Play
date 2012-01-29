@@ -191,7 +191,6 @@ class MarkedScene(QGraphicsScene):
     def setWindow(self, topLeft):
         if self._zoom > 1:
             rect = self._theView.rect()
-            print topLeft.x(), rect.width()
             topLeft.setX(topLeft.x() - 1)
             topLeft.setY(topLeft.y() - 1)
             rect.moveTopLeft(topLeft)
