@@ -62,13 +62,13 @@ class MarkedScene(QGraphicsScene): #IGNORE:R0902
     def setCurrent(self, ms):
         self._currentMarker.setX(ms)
 
-    def setTotal(self, total):
+    def setTotal(self, total, zoom):
         self.setSceneRect(0, 0, total, 100)
         self._currentMarker.setVisible(total > 0)
         self._theView.setVisible(total > 0)
         self._flasher.setRect(0, 0, total, 100)
         self._total = total
-        self.setZoom(self._zoom)
+        self.setZoom(zoom)
 
     def _setBegin(self, position):
         self._begin = position

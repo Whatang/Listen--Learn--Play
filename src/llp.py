@@ -313,7 +313,7 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
                 self._numDps += 1
                 tens *= 10
             self.totalLabel.setText("%.2f" % (total / 1000.0))
-            self._scene.setTotal(total)
+            self._scene.setTotal(total, self._zoom)
             self.markView.setViewportMargins(0, 0, 0, 0)
             self._tick(self._media.currentTime())
             self.markView.setSceneRect(self._scene.sceneRect())
@@ -329,7 +329,7 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
             self._changeTransform()
         else:
             self.totalLabel.setText("--")
-            self._scene.setTotal(total)
+            self._scene.setTotal(total, self._zoom)
             self._tick(0)
             self.markView.setSceneRect(0, 0, 0, 0)
             self.globalView.setSceneRect(0, 0, 0, 0)
