@@ -6,10 +6,14 @@ Created on 27 Jan 2012
 '''
 
 from PyQt4.QtGui import QKeySequence
+import pickle
 from midiMessages import (MidiControlThread, MidiRecogniser,
                           MidiMessage, SysExMessage)
 
 class AbstractOperation(object):
+    def __init__(self, opnum):
+        self.opnum = opnum
+
     def shortcut(self):
         raise NotImplementedError()
 
@@ -23,8 +27,8 @@ class AbstractOperation(object):
 
 
 class SingleAction(AbstractOperation):
-    def __init__(self, action):
-        super(SingleAction, self).__init__()
+    def __init__(self, action, opnum):
+        super(SingleAction, self).__init__(opnum)
         self.action = action
 
     def shortcut(self):
@@ -39,8 +43,8 @@ class SingleAction(AbstractOperation):
 
 
 class ActionPair(AbstractOperation):
-    def __init__(self, actionOn, actionOff, shortcut):
-        super(ActionPair, self).__init__()
+    def __init__(self, actionOn, actionOff, shortcut, opnum):
+        super(ActionPair, self).__init__(opnum)
         self.actionOn = actionOn
         self.actionOff = actionOff
         self._shortcut = QKeySequence(shortcut)
@@ -61,8 +65,8 @@ class PairedMidi(object):
         return self.midiOn.unparamString() + "/" + self.midiOff.unparamString()
 
 class ParameterAction(AbstractOperation):
-    def __init__(self, method, outputMin, outputMax):
-        super(ParameterAction, self).__init__()
+    def __init__(self, method, outputMin, outputMax, opnum):
+        super(ParameterAction, self).__init__(opnum)
         self._method = method
         self._outputMin = outputMin
         self._outputRange = outputMax - outputMin
@@ -109,23 +113,26 @@ class ControlSet(object):
         self._actionPairs = set()
         self._parameterActions = set()
         self._shortcuts = {}
+        self._byOp = {}
 
     def _addAction(self, action, description):
         if action not in self._actions:
             self._actions.append(action)
             self._descriptions[action] = description
             self._shortcuts[action] = action.shortcut()
+            self._byOp[action.opnum] = action
 
-    def addSingleAction(self, action, description):
-        self._addAction(SingleAction(action), description)
+    def addSingleAction(self, action, description, opnum):
+        self._addAction(SingleAction(action, opnum), description)
 
-    def addActionPair(self, actionOn, actionOff, shortcut, description):
-        actionPair = ActionPair(actionOn, actionOff, shortcut)
+    def addActionPair(self, actionOn, actionOff, shortcut, description, opnum):
+        actionPair = ActionPair(actionOn, actionOff, shortcut, opnum)
         self._actionPairs.add(actionPair)
         self._addAction(actionPair, description)
 
-    def addParameterAction(self, method, description, outputMin, outputMax):
-        parameterAction = ParameterAction(method, outputMin, outputMax)
+    def addParameterAction(self, method, description,
+                           outputMin, outputMax, opnum):
+        parameterAction = ParameterAction(method, outputMin, outputMax, opnum)
         self._parameterActions.add(parameterAction)
         self._addAction(parameterAction, description)
 
@@ -188,9 +195,6 @@ class ControlSet(object):
             del self._midi[action]
         elif midiData is not None:
             if action.numActions() == 1:
-                if (action in self._parameterActions
-                    and not midiData.hasFreeParameter()):
-                    midiData = midiData.makeParametrised()
                 self._midi[action] = midiData
                 self._midiRecogniser.addMessageTarget(midiData, action)
             elif not isinstance(midiData, PairedMidi):
@@ -224,5 +228,24 @@ class ControlSet(object):
             target.trigger(midiData.parameterValue())
         else:
             target.trigger()
+
+    def save(self, handle, midiDict = None):
+        if midiDict is None:
+            midiDict = self._midi
+        for action in self.iterActions():
+            opnum = action.opnum
+            midiMsg = midiDict.get(action, None)
+            pickle.dump((opnum, midiMsg), handle)
+
+    def load(self, handle):
+        newMidi = dict((action, None) for action in self.iterActions())
+        try:
+            while True:
+                opnum, midiMsg = pickle.load(handle)
+                newMidi[self._byOp[opnum]] = midiMsg
+        except EOFError:
+            return newMidi
+        return None
+
 
 

@@ -4,7 +4,7 @@ Created on 27 Jan 2012
 @author: Mike Thomas
 
 '''
-from PyQt4.QtGui import QDialog, QTableWidgetItem, QMessageBox
+from PyQt4.QtGui import QDialog, QTableWidgetItem, QMessageBox, QFileDialog
 from PyQt4.QtCore import QVariant, Qt
 from pygame import midi
 from midiLearnDialog import MidiLearnDialog
@@ -69,6 +69,8 @@ class EditControlsDialog(QDialog, Ui_EditControlsDialog):
         self._inputSelector.currentIndexChanged.connect(self._selectNewMidi)
         self._midiOnBox.toggled.connect(self._midiOnToggled)
         self._settingsTable.itemDoubleClicked.connect(self._itemDoubleClicked)
+        self.fileBox.button(self.fileBox.Save).clicked.connect(self._save)
+        self.fileBox.button(self.fileBox.Open).clicked.connect(self._load)
 
     def _populateMidiInputs(self):
         self._inputSelector.blockSignals(True)
@@ -142,3 +144,41 @@ class EditControlsDialog(QDialog, Ui_EditControlsDialog):
         if self._originalMidi != -1:
             self._controls.openMidiDevice(self._originalMidi)
         super(EditControlsDialog, self).reject()
+
+    def _save(self):
+        caption = "Save settings file"
+        directory = ""
+        fname = QFileDialog.getSaveFileName(parent = self,
+                                            caption = caption,
+                                            directory = directory,
+                                            filter = "Settings files (*.llp)")
+        if not fname:
+            return
+        fname = str(fname)
+        with open(fname, 'wb') as handle:
+            self._controls.save(handle, self._newMidi)
+
+    def _load(self):
+        caption = "Open settings file"
+        directory = ""
+        fname = QFileDialog.getOpenFileName(parent = self,
+                                            caption = caption,
+                                            directory = directory,
+                                            filter = "Settings files (*.llp)")
+        if not fname:
+            return
+        fname = str(fname)
+        with open(fname) as handle:
+            newMidi = self._controls.load(handle)
+        self._settingsTable.setSortingEnabled(False)
+        for row in xrange(self._settingsTable.rowCount()):
+            item = self._settingsTable.item(row, 2)
+            actionNum = item.data(ACTION_ROLE).toInt()[0]
+            action = self._controls[actionNum]
+            midiData = newMidi[action]
+            self._newMidi[action] = midiData
+            if midiData is None:
+                item.setText("")
+            else:
+                midiData = action.unparametrise(midiData)
+                item.setText(midiData.unparamString())

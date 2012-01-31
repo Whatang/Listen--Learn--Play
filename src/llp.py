@@ -34,6 +34,7 @@ from ui_llp import Ui_LlpMainWindow
 from MarkedScene import MarkedScene
 from controlSet import ControlSet
 from editControls import EditControlsDialog
+import operations
 
 WINDOW_TITLE = "Listen, Learn, Play"
 TICK_INTERVAL = 25
@@ -105,36 +106,57 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
                          self.actionSetBegin, self.actionSetBegin_2,
                          self.actionSetEnd, self.actionSetEnd_2,
                          self.actionTrack])
-        self._controls.addSingleAction(self.actionHome, "Go to start")
+        self._controls.addSingleAction(self.actionHome, "Go to start",
+                                       operations.HOME)
         self._controls.addActionPair(self.actionStartRewind,
                                      self.actionEndRewind,
-                                     Qt.Key_Left, "Rewind")
-        self._controls.addSingleAction(self.actionPlay, "Play/pause playback")
-        self._controls.addSingleAction(self.actionCountIn, "Start count in")
+                                     Qt.Key_Left, "Rewind",
+                                     operations.REWIND)
+        self._controls.addSingleAction(self.actionPlay, "Play/pause playback",
+                                       operations.PLAY)
+        self._controls.addSingleAction(self.actionCountIn, "Start count in",
+                                       operations.COUNT)
         self._controls.addActionPair(self.actionStartForward,
                                      self.actionEndForward,
-                                     Qt.Key_Right, "Fast Forward")
-        self._controls.addSingleAction(self.actionEnd, "Go to end")
-        self._controls.addSingleAction(self.actionMark, "Set/delete mark")
+                                     Qt.Key_Right, "Fast Forward",
+                                     operations.FFWD)
+        self._controls.addSingleAction(self.actionEnd, "Go to end",
+                                       operations.END)
+        self._controls.addSingleAction(self.actionMark, "Set/delete mark",
+                                       operations.MARK)
         self._controls.addSingleAction(self.actionSetBegin,
-                                       "Set selection start")
+                                       "Set selection start",
+                                       operations.SETBEGIN)
         self._controls.addSingleAction(self.actionPreviousMark,
-                                 "Go to previous mark")
-        self._controls.addSingleAction(self.actionSetBegin, "Set selection end")
-        self._controls.addSingleAction(self.actionNextMark, "Go to next mark")
-        self._controls.addSingleAction(self.actionLoop, "Toggle looping")
+                                 "Go to previous mark",
+                                 operations.PREV)
+        self._controls.addSingleAction(self.actionSetEnd, "Set selection end",
+                                       operations.SETEND)
+        self._controls.addSingleAction(self.actionNextMark, "Go to next mark",
+                                       operations.NEXT)
+        self._controls.addSingleAction(self.actionLoop, "Toggle looping",
+                                       operations.LOOP)
         self._controls.addSingleAction(self.actionSelection,
-                                 "Toggle song/selection playback")
+                                 "Toggle song/selection playback",
+                                 operations.SONG)
         self._controls.addSingleAction(self.actionTrack,
-                                       "Toggle playback tracking")
-        self._controls.addSingleAction(self.actionZoomIn, "Zoom In")
-        self._controls.addSingleAction(self.actionZoomOut, "Zoom Out")
-        self._controls.addSingleAction(self.actionToggleMute, "Toggle Mute")
-        self._controls.addSingleAction(self.actionVolumeUp, "Volume Up")
-        self._controls.addParameterAction(self._setVolume, "Set Volume", 0, 1)
-        self._controls.addSingleAction(self.actionVolumeDown, "Volume Down")
+                                       "Toggle playback tracking",
+                                       operations.TRACK)
+        self._controls.addSingleAction(self.actionZoomIn, "Zoom In",
+                                       operations.ZOOMIN)
+        self._controls.addSingleAction(self.actionZoomOut, "Zoom Out",
+                                       operations.ZOOMOUT)
+        self._controls.addSingleAction(self.actionToggleMute, "Toggle Mute",
+                                       operations.MUTE)
+        self._controls.addSingleAction(self.actionVolumeUp, "Volume Up",
+                                       operations.VOLUP)
+        self._controls.addParameterAction(self._setVolume, "Set Volume", 0, 1,
+                                          operations.SETVOL)
+        self._controls.addSingleAction(self.actionVolumeDown, "Volume Down",
+                                       operations.VOLDN)
         self._controls.addParameterAction(self._setPlaybackTime,
-                                          "Set playback time", 0, 1)
+                                          "Set playback time", 0, 1,
+                                          operations.SETTIME)
 
 
 

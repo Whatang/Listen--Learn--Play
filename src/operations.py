@@ -1,0 +1,28 @@
+'''
+Created on 30 Jan 2012
+
+@author: Mike Thomas
+'''
+
+
+HOME = 0
+PLAY = 1
+REWIND = 2
+COUNT = 3
+FFWD = 4
+END = 5
+MARK = 6
+SETBEGIN = 7
+SETEND = 8
+NEXT = 9
+PREV = 10
+LOOP = 11
+SONG = 12
+TRACK = 13
+ZOOMIN = 14
+ZOOMOUT = 15
+MUTE = 16
+VOLUP = 17
+VOLDN = 18
+SETVOL = 19
+SETTIME = 20
