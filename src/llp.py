@@ -23,12 +23,13 @@ Created on 26 Jan 2012
 import sys
 import os
 from PyQt4.QtGui import (QApplication, QMainWindow, QDesktopServices,
-                         QFileDialog, QIcon, QPixmap, QTransform)
+                         QFileDialog, QIcon, QPixmap, QTransform, QMessageBox)
 from PyQt4.QtCore import pyqtSignature, QTimer, Qt
 from PyQt4.phonon import Phonon
 sys.path.append("Images")
 import pygame
 from pygame import midi
+import itertools
 
 from ui_llp import Ui_LlpMainWindow
 from MarkedScene import MarkedScene
@@ -66,6 +67,7 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         self._controls = ControlSet()
         self._scene = MarkedScene(self)
         self._media = Phonon.MediaObject(self)
+        self._filterList = []
         self._audio = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self._hsc = self.markView.horizontalScrollBar()
         # Connect signals
@@ -92,6 +94,28 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         self._checkButtons()
         self._setupActions()
         self.grabKeyboard()
+        self._mimeTypes = set()
+        self._checkMusicType("Mp3", ["mp3"], ["audio/mp3",
+                                              "audio/mpeg3"])
+        self._checkMusicType("Mp4", ["m4a", "mp4"], ["audio/mp4",
+                                                     "audio/mp4a-latm"])
+        allExtensions = []
+        for unusedName, extList in self._filterList:
+            allExtensions.extend(extList)
+        self._filterList.insert(0, ("Any", ["*.*"]))
+        self._filterList.insert(0, ("Music files", allExtensions))
+        filters = ["%s (%s)" % (name,
+                                " ".join("*.%s" % ext for ext in extList))
+                   for (name, extList) in self._filterList]
+        self._filter = ";;".join(filters)
+#        for eff in Phonon.BackendCapabilities.availableAudioEffects():
+#            print eff.name()
+
+    def _checkMusicType(self, name, extensions, mimeTypes):
+        for mType in mimeTypes:
+            if Phonon.BackendCapabilities.isMimeTypeAvailable(mType):
+                self._filterList.append((name, extensions))
+                break
 
     def _setupActions(self):
         self.addActions([self.actionPlay, self.actionCountIn,
@@ -158,8 +182,6 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
                                           "Set playback time", 0, 1,
                                           operations.SETTIME)
 
-
-
     def printMeta(self):
         for k, v in self._media.metaData().iteritems():
             print str(k), str(v)
@@ -179,17 +201,18 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         fname = QFileDialog.getOpenFileName(parent = self,
                                             caption = caption,
                                             directory = directory,
-                                            filter = "Music files (*.mp3)")
+                                            filter = self._filter)
         if len(fname) == 0:
             return
-        self._filename = str(fname)
-        self._media.setCurrentSource(Phonon.MediaSource(fname))
+        fname = str(fname)
+        self._filename = fname
+        source = Phonon.MediaSource(fname)
+        self._media.setCurrentSource(source)
         self._scene.newSong()
         self._media.pause() # Makes sure tick signals are emitted
         self.setZoom(1)
         base = os.path.splitext(os.path.basename(self._filename))[0]
         self.setWindowTitle(WINDOW_TITLE + " - " + base)
-
 
     @pyqtSignature("")
     def on_actionPlay_triggered(self):
@@ -203,6 +226,17 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
     def _mediaStateChanged(self, newState):
         self._checkButtons(newState)
         if newState == Phonon.ErrorState:
+            eString = str(self._media.errorString())
+            if eString.endswith("(0x80040265)"):
+                QMessageBox.warning(self, "Unsupported codec",
+                                    "You do not have the correct codec installed to play back this sort of file")
+            elif eString.endswith("(0x80040266)"):
+                QMessageBox.warning(self, "ID3 tag error",
+                                    "Cannot read compressed ID3 tags: " +
+                                    eString)
+            else:
+                QMessageBox.warning(self, "Unknown error opening file",
+                                    eString)
             self._totalChanged(0)
 
     def _checkButtons(self, state = None, ms = None):
