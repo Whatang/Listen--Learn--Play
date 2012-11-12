@@ -24,8 +24,11 @@ back music under the user's control. All the basic operations that are needed
 to make it easy to practice a piece of music repeatedly are accessible with
 the mouse and with keyboard shortcuts.
 
-The next step is to add MIDI control so that a control surface can be used to
-give the user convenient access to the functionality of LLP.   
+LLP incorporates MIDI control so that a control surface can be used to give 
+the user convenient access to LLP's functionality.
+
+LLP seems to have a few minor bugs in it, especially obvious when running
+on Linux.
 
 About
 =====
@@ -34,7 +37,7 @@ I'm a drummer. I got frustrated with having to put the sticks down and fiddle
 with my ipod every 10 seconds when trying to learn difficult fills.
 
 LLP is written in Python using PyQt4 and Phonon to provide the graphical and
-audio capabilities.
+audio capabilities. pygame is used to access MIDI inputs.
 
 Licensing
 =========
