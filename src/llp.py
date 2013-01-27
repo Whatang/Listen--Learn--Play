@@ -24,8 +24,9 @@ import sys
 import os
 from PyQt4.QtGui import (QApplication, QMainWindow, QDesktopServices,
                          QFileDialog, QIcon, QPixmap, QTransform, QMessageBox)
-from PyQt4.QtCore import pyqtSignature, QTimer, Qt
+from PyQt4.QtCore import pyqtSignature, QTimer, Qt, QSettings, QVariant
 from PyQt4.phonon import Phonon
+from hashlib import md5
 sys.path.append("Images")
 import pygame
 from pygame import midi
@@ -69,6 +70,13 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         self._filterList = []
         self._audio = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self._hsc = self.markView.horizontalScrollBar()
+        settings = QSettings()
+        self.recentFiles = [unicode(fname) for fname in
+                            settings.value("RecentFiles").toStringList()
+                            if os.path.exists(unicode(fname))]
+        self._knownSongMarks = {}
+        self._currentSongHash = None
+        self._loadKnownMarks(settings)
         # Connect signals
         self._media.totalTimeChanged.connect(self._totalChanged)
         self._media.stateChanged.connect(self._mediaStateChanged)
@@ -107,6 +115,7 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
                                 " ".join("*.%s" % ext for ext in extList))
                    for (name, extList) in self._filterList]
         self._filter = ";;".join(filters)
+        self._updateRecent()
 #        for eff in Phonon.BackendCapabilities.availableAudioEffects():
 #            print eff.name()
 
@@ -203,15 +212,53 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
                                             filter = self._filter)
         if len(fname) == 0:
             return
-        fname = str(fname)
+        self._saveCurrentMarks()
+        self._loadSong(fname)
+
+    def _loadSong(self, fname):
+        fname = unicode(fname)
         self._filename = fname
+        self._calculateSongHash()
         source = Phonon.MediaSource(fname)
         self._media.setCurrentSource(source)
         self._scene.newSong()
         self._media.pause() # Makes sure tick signals are emitted
+        if self._currentSongHash in self._knownSongMarks:
+            self._scene.loadMarksFromList(self._knownSongMarks[self._currentSongHash])
         self.setZoom(1)
         base = os.path.splitext(os.path.basename(self._filename))[0]
         self.setWindowTitle(WINDOW_TITLE + " - " + base)
+        self._updateRecent()
+
+    def _updateRecent(self):
+        if self._filename is not None:
+            if self._filename in self.recentFiles:
+                self.recentFiles.remove(self._filename)
+            self.recentFiles.insert(0, self._filename)
+            if len(self.recentFiles) > 50:
+                self.recentFiles.pop()
+            settings = QSettings()
+            settings.setValue("RecentFiles", QVariant(self.recentFiles))
+        try:
+            self.recentFilesBox.blockSignals(True)
+            self.recentFilesBox.clear()
+            self.recentFilesBox.addItem("Recent Song Files")
+            for fname in self.recentFiles:
+                base = os.path.splitext(os.path.basename(fname))[0]
+                if fname != self._filename and os.path.exists(fname):
+                    self.recentFilesBox.addItem(base, userData=QVariant(fname))
+            self.recentFilesBox.setEnabled(len(self.recentFiles) > 0)
+            self.recentFilesBox.setCurrentIndex(0)
+        finally:
+            self.recentFilesBox.blockSignals(False)
+
+
+    @pyqtSignature("int")
+    def on_recentFilesBox_currentIndexChanged(self, index):
+        if index == 0:
+            return
+        filename = unicode(self.recentFilesBox.itemData(index).toString())
+        self._loadSong(filename)
 
     @pyqtSignature("")
     def on_actionPlay_triggered(self):
@@ -573,7 +620,33 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         dlg = EditControlsDialog(self._controls, self)
         dlg.exec_()
 
+    def _calculateSongHash(self):
+        with open(self._filename, "rb") as songfile:
+            data = songfile.read()
+            self._currentSongHash = md5(data).hexdigest()
+
+    def _saveCurrentMarks(self):
+        if self._currentSongHash is None:
+            return
+        settings = QSettings()
+        settings.beginGroup("Marks")
+        try:
+            marks = self._scene.listMarks()
+            settings.setValue(self._currentSongHash, QVariant(marks))
+        finally:
+            settings.endGroup()
+
+    def _loadKnownMarks(self, settings):
+        settings.beginGroup("Marks")
+        try:
+            for songHash in settings.allKeys():
+                markList = str(settings.value(songHash).toString())
+                self._knownSongMarks[str(songHash)] = markList
+        finally:
+            settings.endGroup()
+
     def closeEvent(self, event):
+        self._saveCurrentMarks()
         self._controls.closeMidiDevice()
         super(LlpMainWindow, self).closeEvent(event)
 
@@ -617,6 +690,9 @@ def main():
     import ctypes
     app = QApplication(sys.argv)
     myappid = 'Whatang.LLP'
+    app.setOrganizationName("Whatang Software")
+    app.setOrganizationDomain("whatang.org")
+    app.setApplicationName("LLP")
     try:
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     except AttributeError:

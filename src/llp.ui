@@ -1231,7 +1231,7 @@ p, li { white-space: pre-wrap; }
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>230</width>
+               <width>10</width>
                <height>20</height>
               </size>
              </property>
@@ -1251,6 +1251,9 @@ p, li { white-space: pre-wrap; }
                <height>24</height>
               </size>
              </property>
+             <property name="toolTip">
+              <string>MIDI Settings</string>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -1260,6 +1263,19 @@ p, li { white-space: pre-wrap; }
              </property>
              <property name="flat">
               <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="recentFilesBox">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Recent Files</string>
              </property>
             </widget>
            </item>

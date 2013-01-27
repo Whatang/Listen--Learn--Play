@@ -165,6 +165,16 @@ class MarkedScene(QGraphicsScene): #IGNORE:R0902
         else:
             self._addMark(len(self._marks), position)
 
+
+    def listMarks(self):
+        return ",".join(map(str, self._marks))
+
+    def loadMarksFromList(self, markListAsString):
+        markListAsString = markListAsString.strip()
+        if markListAsString:
+            for mark in map(int, markListAsString.strip().split(",")):
+                self.toggleMark(mark)
+
     def flash(self):
         self._flasher.setVisible(True)
         QTimer.singleShot(100, lambda : self._flasher.setVisible(False))
