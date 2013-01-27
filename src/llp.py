@@ -616,7 +616,7 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
 def main():
     import ctypes
     app = QApplication(sys.argv)
-    myappid = 'Whatang.DrumBurp'
+    myappid = 'Whatang.LLP'
     try:
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     except AttributeError:
