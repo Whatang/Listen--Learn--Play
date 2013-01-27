@@ -29,7 +29,6 @@ from PyQt4.phonon import Phonon
 sys.path.append("Images")
 import pygame
 from pygame import midi
-import itertools
 
 from ui_llp import Ui_LlpMainWindow
 from MarkedScene import MarkedScene
@@ -229,7 +228,8 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
             eString = str(self._media.errorString())
             if eString.endswith("(0x80040265)"):
                 QMessageBox.warning(self, "Unsupported codec",
-                                    "You do not have the correct codec installed to play back this sort of file")
+                                    "You do not have the correct codec "
+                                    "installed to play back this sort of file")
             elif eString.endswith("(0x80040266)"):
                 QMessageBox.warning(self, "ID3 tag error",
                                     "Cannot read compressed ID3 tags: " +
