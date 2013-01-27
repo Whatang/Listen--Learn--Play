@@ -30,6 +30,7 @@ from hashlib import md5
 sys.path.append("Images")
 import pygame
 from pygame import midi
+from StringIO import StringIO
 
 from ui_llp import Ui_LlpMainWindow
 from MarkedScene import MarkedScene
@@ -189,6 +190,11 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         self._controls.addParameterAction(self._setPlaybackTime,
                                           "Set playback time", 0, 1,
                                           operations.SETTIME)
+        settings = QSettings()
+        data = str(settings.value("Controls").toString())
+        if data:
+            handle = StringIO(data)
+            self._controls.load(handle)
 
     def printMeta(self):
         for k, v in self._media.metaData().iteritems():
@@ -618,7 +624,12 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
     @pyqtSignature("")
     def on_settingsButton_clicked(self):
         dlg = EditControlsDialog(self._controls, self)
-        dlg.exec_()
+        if dlg.exec_():
+            handle = StringIO()
+            self._controls.save(handle)
+            data = QVariant(handle.getvalue())
+            settings = QSettings()
+            settings.setValue("Controls", data)
 
     def _calculateSongHash(self):
         with open(self._filename, "rb") as songfile:
