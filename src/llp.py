@@ -480,10 +480,16 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow):  # IGNORE:R0902+R0904
         self.setZoom()
 
     def _changeTransform(self):
-        sx = (float(self._zoom * (self.markView.viewport().width()))
-              / self._scene.width())
+        if not self._scene.width() == 0:
+            sx = (float(self._zoom * (self.markView.viewport().width()))
+                  / self._scene.width())
+        else:
+            sx = 0
         height = self.markView.viewport().height() - 1
-        sy = float(height) / self._scene.height()
+        if not self._scene.height() == 0:
+            sy = float(height) / self._scene.height()
+        else:
+            sy = 0
         transform = QTransform(sx, 0, 0,
                                0, sy, 0,
                                0, 0, 1)
