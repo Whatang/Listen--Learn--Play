@@ -115,12 +115,10 @@ class MarkedScene(QGraphicsScene): #IGNORE:R0902
         else:
             theMark = lastMark
         if (self.end is not None
-            and position > self.end
-            and self.end >= theMark):
+            and position > self.end >= theMark):
             theMark = self.end
         elif (self.begin is not None
-              and position > self.begin
-              and self.begin >= theMark):
+              and position > self.begin >= theMark):
             theMark = self.begin
         return theMark
 
@@ -135,12 +133,10 @@ class MarkedScene(QGraphicsScene): #IGNORE:R0902
         else:
             theMark = self._total
         if (self.begin is not None
-            and position < self.begin
-            and self.begin <= theMark):
+            and position < self.begin <= theMark):
             theMark = self.begin
         elif (self.end is not None
-              and position < self.end
-              and self.end <= theMark):
+              and position < self.end <= theMark):
             theMark = self.end
         return theMark
 
