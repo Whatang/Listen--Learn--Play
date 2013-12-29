@@ -1,9 +1,9 @@
-'''
+"""
 Created on 29 Jan 2012
 
 @author: Mike Thomas
 
-'''
+"""
 
 from PyQt4.QtGui import QDialog
 from ui_midiLearnPaired import Ui_MidiLearnPairedDialog
@@ -11,15 +11,15 @@ from midiMessages import MidiControlThread
 from controlSet import PairedMidi
 
 class MidiLearnPairedDialog(QDialog, Ui_MidiLearnPairedDialog):
-    '''
+    """
     classdocs
-    '''
+    """
 
 
     def __init__(self, midiDeviceId, parent = None):
-        '''
+        """
         Constructor
-        '''
+        """
         super(MidiLearnPairedDialog, self).__init__(parent)
         self.setupUi(self)
         self.secondMidiBox.setDisabled(True)

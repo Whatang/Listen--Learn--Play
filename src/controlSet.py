@@ -1,9 +1,9 @@
-'''
+"""
 Created on 27 Jan 2012
 
 @author: Mike Thomas
 
-'''
+"""
 
 from PyQt4.QtGui import QKeySequence
 import pickle
@@ -95,15 +95,15 @@ class ParameterAction(AbstractOperation):
 
 
 class ControlSet(object):
-    '''
+    """
     classdocs
-    '''
+    """
 
 
     def __init__(self, midiDevice = -1):
-        '''
+        """
         Constructor
-        '''
+        """
         self.midiDevice = midiDevice
         self._midiThread = None
         self._midiRecogniser = MidiRecogniser()

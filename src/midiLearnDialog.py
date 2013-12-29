@@ -1,9 +1,9 @@
-'''
+"""
 Created on 28 Jan 2012
 
 @author: Mike Thomas
 
-'''
+"""
 
 from PyQt4.QtGui import QDialog
 from ui_midiLearnDialog import Ui_midiLearnDialog

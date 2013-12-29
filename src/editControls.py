@@ -1,9 +1,9 @@
-'''
+"""
 Created on 27 Jan 2012
 
 @author: Mike Thomas
 
-'''
+"""
 from PyQt4.QtGui import QDialog, QTableWidgetItem, QMessageBox, QFileDialog
 from PyQt4.QtCore import QVariant, Qt
 from pygame import midi
@@ -23,15 +23,15 @@ def getInputDevices():
 from ui_editControlsDialog import Ui_EditControlsDialog
 
 class EditControlsDialog(QDialog, Ui_EditControlsDialog):
-    '''
+    """
     classdocs
-    '''
+    """
 
 
     def __init__(self, controls, parent = None):
-        '''
+        """
         Constructor
-        '''
+        """
         super(EditControlsDialog, self).__init__(parent)
         self.setupUi(self)
         self._controls = controls

@@ -1,4 +1,4 @@
-'''
+"""
 Created on 26 Jan 2012
 
 @author: Mike Thomas
@@ -17,16 +17,16 @@ Copyright (C) 2012 Michael Thomas
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 
 from PyQt4.QtGui import QGraphicsScene, QPen, QBrush
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.Qt import Qt, QTimer
 
 class MarkedScene(QGraphicsScene): #IGNORE:R0902
-    '''
+    """
     classdocs
-    '''
+    """
 
     currentChanged = pyqtSignal(int)
 

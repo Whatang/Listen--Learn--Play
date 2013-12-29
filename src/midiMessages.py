@@ -1,8 +1,8 @@
-'''
+"""
 Created on 29 Jan 2012
 
 @author: Mike Thomas
-'''
+"""
 from pygame import midi
 from PyQt4.QtCore import QThread, pyqtSignal
 
