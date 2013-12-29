@@ -44,9 +44,10 @@ SPOOL_INTERVAL = 1
 MIN_ZOOM = 1
 MAX_ZOOM = 16
 
-class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
 
-    def __init__(self, parent = None):
+class LlpMainWindow(QMainWindow, Ui_LlpMainWindow):  # IGNORE:R0902+R0904
+
+    def __init__(self, parent=None):
         super(LlpMainWindow, self).__init__(parent)
         self.setupUi(self)
         # Setup instance variables
@@ -161,8 +162,8 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
                                        "Set selection start",
                                        operations.SETBEGIN)
         self._controls.addSingleAction(self.actionPreviousMark,
-                                 "Go to previous mark",
-                                 operations.PREV)
+                                       "Go to previous mark",
+                                       operations.PREV)
         self._controls.addSingleAction(self.actionSetEnd, "Set selection end",
                                        operations.SETEND)
         self._controls.addSingleAction(self.actionNextMark, "Go to next mark",
@@ -170,8 +171,8 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         self._controls.addSingleAction(self.actionLoop, "Toggle looping",
                                        operations.LOOP)
         self._controls.addSingleAction(self.actionSelection,
-                                 "Toggle song/selection playback",
-                                 operations.SONG)
+                                       "Toggle song/selection playback",
+                                       operations.SONG)
         self._controls.addSingleAction(self.actionTrack,
                                        "Toggle playback tracking",
                                        operations.TRACK)
@@ -212,10 +213,10 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
             loc = QDesktopServices.MusicLocation
             directory = QDesktopServices.storageLocation(loc)
         caption = "Open a music file"
-        fname = QFileDialog.getOpenFileName(parent = self,
-                                            caption = caption,
-                                            directory = directory,
-                                            filter = self._filter)
+        fname = QFileDialog.getOpenFileName(parent=self,
+                                            caption=caption,
+                                            directory=directory,
+                                            filter=self._filter)
         if len(fname) == 0:
             return
         self._saveCurrentMarks()
@@ -228,7 +229,7 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         source = Phonon.MediaSource(fname)
         self._media.setCurrentSource(source)
         self._scene.newSong()
-        self._media.pause() # Makes sure tick signals are emitted
+        self._media.pause()  # Makes sure tick signals are emitted
         if self._currentSongHash in self._knownSongMarks:
             self._scene.loadMarksFromList(self._knownSongMarks[self._currentSongHash])
         self.setZoom(1)
@@ -257,7 +258,6 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
             self.recentFilesBox.setCurrentIndex(0)
         finally:
             self.recentFilesBox.blockSignals(False)
-
 
     @pyqtSignature("int")
     def on_recentFilesBox_currentIndexChanged(self, index):
@@ -292,7 +292,7 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
                                     eString)
             self._totalChanged(0)
 
-    def _checkButtons(self, state = None, ms = None):
+    def _checkButtons(self, state=None, ms=None):
         if state is None:
             state = self._media.state()
         if ms is None:
@@ -382,7 +382,6 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         self._media.pause()
         self._forwarding.start()
 
-
     def _forwarder(self):
         newPos = min(self._total, self._oldMs + self._spool)
         self._media.seek(newPos)
@@ -402,7 +401,7 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         else:
             self.positionIndicator.setText("%0*.2f" % (self._numDps, seconds))
         if ms < self._oldMs or ms == self._total or self._oldMs == 0:
-            self._checkButtons(ms = ms)
+            self._checkButtons(ms=ms)
         self._oldMs = ms
         self._scene.setCurrent(ms)
         self._doTracking()
@@ -565,7 +564,7 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
                         - self.volumeSlider.pageStep() / 100.0)
         self._audio.setVolume(newVolume)
 
-    def setZoom(self, zoom = None):
+    def setZoom(self, zoom=None):
         if zoom is not None:
             self._zoom = zoom
             self._scene.setZoom(zoom)
@@ -601,7 +600,6 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         self.zoomInButton.setEnabled(self._zoom < MAX_ZOOM)
         self.zoomOutButton.setEnabled(self._zoom > MIN_ZOOM)
         self.trackButton.setDisabled(self._zoom == 1)
-
 
     @pyqtSignature("")
     def on_actionPageUp_triggered(self):

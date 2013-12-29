@@ -10,6 +10,7 @@ from PyQt4.QtCore import QThread, pyqtSignal
 class MidiMessage(object):
     status = None
     typeName = "Unrecognized"
+
     def __init__(self, channel, data1, data2, *extra):
         self.channel = channel & 0xF
         self.data1 = data1
@@ -27,15 +28,17 @@ class MidiMessage(object):
     def identifyingSequence(self):
         raise NotImplementedError()
 
-    def hasFreeParameter(self): #IGNORE:R0201
+    def hasFreeParameter(self):  # IGNORE:R0201
         return True
 
     def makeParametrised(self):
         return self
 
+
 class NoteOffMidiMessage(MidiMessage):
     status = 0x8
     typeName = "NoteOff"
+
     def unparamString(self):
         return "Note %d On, Channel %d" % (self.data1,
                                            self.channel)
@@ -46,10 +49,10 @@ class NoteOffMidiMessage(MidiMessage):
         yield self.data1
 
 
-
 class NoteOnMidiMessage(MidiMessage):
     status = 0x9
     typeName = "NoteOn"
+
     def unparamString(self):
         return "Note %d Off, Channel %d" % (self.data1,
                                             self.channel)
@@ -59,9 +62,11 @@ class NoteOnMidiMessage(MidiMessage):
         yield self.channel
         yield self.data1
 
+
 class PolyphonicAftertouchMidiMessage(MidiMessage):
     status = 0xA
     typeName = "PolyAT"
+
     def unparamString(self):
         return "%s Channel %d, Note %d" % (self.typeName,
                                            self.channel,
@@ -72,9 +77,11 @@ class PolyphonicAftertouchMidiMessage(MidiMessage):
         yield self.channel
         yield self.data1
 
+
 class ControlMidiMessage(MidiMessage):
     status = 0xB
     typeName = "Control"
+
     def unparamString(self):
         return "%s Channel %d. Controller %d, Value %d" % (self.typeName,
                                                            self.channel,
@@ -94,6 +101,7 @@ class ControlMidiMessage(MidiMessage):
         return ParametrisedControlMidiMessage(self.channel, self.data1,
                                               None)
 
+
 class ParametrisedControlMidiMessage(ControlMidiMessage):
     def unparamString(self):
         return "%s Channel %d. Parametrised Controller %d" % (self.typeName,
@@ -111,9 +119,11 @@ class ParametrisedControlMidiMessage(ControlMidiMessage):
     def makeParametrised(self):
         return self
 
+
 class ProgramMidiMessage(MidiMessage):
     status = 0xC
     typeName = "Program"
+
     def unparamString(self):
         return "%s Channel %d. Program %d" % (self.typeName,
                                               self.channel,
@@ -123,6 +133,7 @@ class ProgramMidiMessage(MidiMessage):
         yield self.status
         yield self.channel
         yield self.data1
+
 
 class ChannelAftertouchMidiMessage(MidiMessage):
     status = 0xD
@@ -137,6 +148,7 @@ class ChannelAftertouchMidiMessage(MidiMessage):
     def identifyingSequence(self):
         yield self.status
         yield self.channel
+
 
 class PitchWheelMidiMessage(MidiMessage):
     status = 0xE
@@ -156,11 +168,12 @@ class PitchWheelMidiMessage(MidiMessage):
 class SysExMessage(MidiMessage):
     status = 0xF
     typeName = "SysEx"
+
     def identifyingSequence(self):
         raise TypeError()
 
 _MIDIMAP = dict((msgType.status, msgType)
-                for msgType in MidiMessage.__subclasses__()) #IGNORE:E1101
+                for msgType in MidiMessage.__subclasses__())  # IGNORE:E1101
 
 
 def midiMessageFactory(status, data1, data2, *extra):
@@ -169,6 +182,7 @@ def midiMessageFactory(status, data1, data2, *extra):
     if msgType is None:
         return None
     return msgType(status & 0x0F, data1, data2, *extra)
+
 
 class MidiControlThread(QThread):
     def __init__(self, deviceId):
@@ -210,6 +224,7 @@ class MidiControlThread(QThread):
 
     def close(self):
         self._running = False
+
 
 class MidiRecogniser(object):
     def __init__(self):

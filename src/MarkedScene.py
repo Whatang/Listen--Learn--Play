@@ -23,7 +23,8 @@ from PyQt4.QtGui import QGraphicsScene, QPen, QBrush
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.Qt import Qt, QTimer
 
-class MarkedScene(QGraphicsScene): #IGNORE:R0902
+
+class MarkedScene(QGraphicsScene):  # IGNORE:R0902
     """
     classdocs
     """
@@ -43,10 +44,10 @@ class MarkedScene(QGraphicsScene): #IGNORE:R0902
         self._selection = None
         self._total = 0
         self.setSceneRect(0, 0, 0, 100)
-        self._flasher = self.addRect(0, 0, 0, 0, pen = Qt.blue, brush = Qt.blue)
+        self._flasher = self.addRect(0, 0, 0, 0, pen=Qt.blue, brush=Qt.blue)
         self._flasher.setVisible(False)
         self._flasher.setOpacity(0.5)
-        self._theView = self.addRect(-1, -1, 0, 102, pen = Qt.blue)
+        self._theView = self.addRect(-1, -1, 0, 102, pen=Qt.blue)
         self._theView.setBrush(QBrush(Qt.NoBrush))
         self._theView.setZValue(20)
         self._theView.setVisible(False)
@@ -76,9 +77,10 @@ class MarkedScene(QGraphicsScene): #IGNORE:R0902
             if self._end is None or self._end < position:
                 self._end = position
         self._drawSelection()
+
     def _getBegin(self):
         return self._begin
-    begin = property(fget = _getBegin, fset = _setBegin)
+    begin = property(fget=_getBegin, fset=_setBegin)
 
     def _setEnd(self, position):
         self._end = position
@@ -86,9 +88,10 @@ class MarkedScene(QGraphicsScene): #IGNORE:R0902
             if self._begin is None or self._begin > position:
                 self._begin = position
         self._drawSelection()
+
     def _getEnd(self):
         return self._end
-    end = property(fget = _getEnd, fset = _setEnd)
+    end = property(fget=_getEnd, fset=_setEnd)
 
     def _drawSelection(self):
         if self.begin is None or self.end is None:
@@ -98,8 +101,8 @@ class MarkedScene(QGraphicsScene): #IGNORE:R0902
         else:
             if self._selection is None:
                 self._selection = self.addRect(0, 0, 0, 0,
-                                               pen = QPen(Qt.cyan),
-                                               brush = QBrush(Qt.yellow))
+                                               pen=QPen(Qt.cyan),
+                                               brush=QBrush(Qt.yellow))
                 self._selection.setZValue(0)
                 self._selection.setOpacity(0.75)
             self._selection.setRect(self.begin, 0, self.end - self.begin, 100)
@@ -115,7 +118,7 @@ class MarkedScene(QGraphicsScene): #IGNORE:R0902
         else:
             theMark = lastMark
         if (self.end is not None
-            and position > self.end >= theMark):
+                and position > self.end >= theMark):
             theMark = self.end
         elif (self.begin is not None
               and position > self.begin >= theMark):
@@ -133,7 +136,7 @@ class MarkedScene(QGraphicsScene): #IGNORE:R0902
         else:
             theMark = self._total
         if (self.begin is not None
-            and position < self.begin <= theMark):
+                and position < self.begin <= theMark):
             theMark = self.begin
         elif (self.end is not None
               and position < self.end <= theMark):
@@ -144,7 +147,7 @@ class MarkedScene(QGraphicsScene): #IGNORE:R0902
         self._marks.insert(index, position)
         self._markLines[position] = self.addLine(position, 0,
                                                  position, 100,
-                                                 pen = QPen(Qt.red))
+                                                 pen=QPen(Qt.red))
         self._markLines[position].setZValue(5)
 
     def toggleMark(self, position):
@@ -161,7 +164,6 @@ class MarkedScene(QGraphicsScene): #IGNORE:R0902
         else:
             self._addMark(len(self._marks), position)
 
-
     def listMarks(self):
         return ",".join(map(str, self._marks))
 
@@ -173,9 +175,9 @@ class MarkedScene(QGraphicsScene): #IGNORE:R0902
 
     def flash(self):
         self._flasher.setVisible(True)
-        QTimer.singleShot(100, lambda : self._flasher.setVisible(False))
+        QTimer.singleShot(100, lambda: self._flasher.setVisible(False))
 
-    def mousePressEvent(self, event): #IGNORE:R0201
+    def mousePressEvent(self, event):  # IGNORE:R0201
         event.accept()
 
     def mouseReleaseEvent(self, event):

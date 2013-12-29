@@ -10,13 +10,13 @@ from ui_midiLearnPaired import Ui_MidiLearnPairedDialog
 from midiMessages import MidiControlThread
 from controlSet import PairedMidi
 
+
 class MidiLearnPairedDialog(QDialog, Ui_MidiLearnPairedDialog):
     """
     classdocs
     """
 
-
-    def __init__(self, midiDeviceId, parent = None):
+    def __init__(self, midiDeviceId, parent=None):
         """
         Constructor
         """

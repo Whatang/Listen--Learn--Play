@@ -12,6 +12,7 @@ from midiLearnPairedDialog import MidiLearnPairedDialog
 
 ACTION_ROLE = Qt.UserRole + 1
 
+
 def getInputDevices():
     for i in xrange(midi.get_count()):
         info = midi.get_device_info(i)
@@ -22,13 +23,13 @@ def getInputDevices():
 
 from ui_editControlsDialog import Ui_EditControlsDialog
 
+
 class EditControlsDialog(QDialog, Ui_EditControlsDialog):
     """
     classdocs
     """
 
-
-    def __init__(self, controls, parent = None):
+    def __init__(self, controls, parent=None):
         """
         Constructor
         """
@@ -53,7 +54,8 @@ class EditControlsDialog(QDialog, Ui_EditControlsDialog):
         self._populateMidiInputs()
         self._settingsTable.setSortingEnabled(False)
         self._settingsTable.setRowCount(len(controls))
-        def addItem(r, c, text, tip = None):
+
+        def addItem(r, c, text, tip=None):
             item = QTableWidgetItem(text)
             if tip:
                 item.setToolTip(tip)
@@ -77,9 +79,9 @@ class EditControlsDialog(QDialog, Ui_EditControlsDialog):
         self._inputSelector.clear()
         if self._midiOnBox.isChecked():
             self._inputSelector.addItem("No device selected",
-                                        userData = QVariant(-1))
+                                        userData=QVariant(-1))
             for j, (i, info) in enumerate(getInputDevices()):
-                self._inputSelector.addItem(info, userData = QVariant(i))
+                self._inputSelector.addItem(info, userData=QVariant(i))
                 if i == self._lastMidi:
                     self._inputSelector.setCurrentIndex(j + 1)
         else:
@@ -92,7 +94,7 @@ class EditControlsDialog(QDialog, Ui_EditControlsDialog):
         self._populateMidiInputs()
 
     def _selectNewMidi(self, index):
-        deviceId = self._inputSelector.itemData(index, role = Qt.UserRole)
+        deviceId = self._inputSelector.itemData(index, role=Qt.UserRole)
         deviceId = deviceId.toInt()[0]
         self._openNewMidi(deviceId)
         if deviceId == -1:
@@ -106,7 +108,7 @@ class EditControlsDialog(QDialog, Ui_EditControlsDialog):
         column = item.column()
         if ((column == 0)
             or (column == 1)
-            or (column == 2 and self._midiInput == -1)):
+                or (column == 2 and self._midiInput == -1)):
             return
         actionIndex = item.data(ACTION_ROLE).toInt()[0]
         action = self._controls[actionIndex]
@@ -148,10 +150,10 @@ class EditControlsDialog(QDialog, Ui_EditControlsDialog):
     def _save(self):
         caption = "Save settings file"
         directory = ""
-        fname = QFileDialog.getSaveFileName(parent = self,
-                                            caption = caption,
-                                            directory = directory,
-                                            filter = "Settings files (*.llp)")
+        fname = QFileDialog.getSaveFileName(parent=self,
+                                            caption=caption,
+                                            directory=directory,
+                                            filter="Settings files (*.llp)")
         if not fname:
             return
         fname = str(fname)
@@ -161,10 +163,10 @@ class EditControlsDialog(QDialog, Ui_EditControlsDialog):
     def _load(self):
         caption = "Open settings file"
         directory = ""
-        fname = QFileDialog.getOpenFileName(parent = self,
-                                            caption = caption,
-                                            directory = directory,
-                                            filter = "Settings files (*.llp)")
+        fname = QFileDialog.getOpenFileName(parent=self,
+                                            caption=caption,
+                                            directory=directory,
+                                            filter="Settings files (*.llp)")
         if not fname:
             return
         fname = str(fname)
