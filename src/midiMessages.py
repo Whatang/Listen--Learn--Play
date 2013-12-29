@@ -187,7 +187,7 @@ class MidiControlThread(QThread):
                 self.msleep(10)
                 while midiIn.poll():
                     midiData = midiIn.read(1)[0][0]
-                    if hasSysEx == False:
+                    if not hasSysEx:
                         if midiData[0] & 0xF0 == 0xF0:
                             hasSysEx = midiData
                             msg = None
