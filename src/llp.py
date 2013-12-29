@@ -111,7 +111,7 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow):  # IGNORE:R0902+R0904
         allExtensions = []
         for unusedName, extList in self._filterList:
             allExtensions.extend(extList)
-        self._filterList.insert(0, ("Any", ["*.*"]))
+        self._filterList.insert(0, ("Any", ["*"]))
         self._filterList.insert(0, ("Music files", allExtensions))
         filters = ["%s (%s)" % (name,
                                 " ".join("*.%s" % ext for ext in extList))
