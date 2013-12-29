@@ -112,7 +112,6 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow):  # IGNORE:R0902+R0904
         self._tick(0)
         self._checkButtons()
         self._setupActions()
-        self.grabKeyboard()
         self._mimeTypes = set()
         self._getAvailableMusicTypes()
         self._buildTypeFilter()
@@ -747,6 +746,7 @@ def main():
     pygame.init()
     midi.init()
     mainWindow.show()
+    mainWindow.grabKeyboard()
     app.exec_()
 
 if __name__ == '__main__':
