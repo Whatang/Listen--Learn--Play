@@ -22,11 +22,21 @@ Created on 26 Jan 2012
 
 import sys
 import os
+from hashlib import md5
+import mimetypes
+
+# GnomeVFS is not available on all platforms
+try:
+    import gnomevfs
+except ImportError:
+    gnomevfs = False
+    pass
+
 from PyQt4.QtGui import (QApplication, QMainWindow, QDesktopServices,
                          QFileDialog, QIcon, QPixmap, QTransform, QMessageBox)
 from PyQt4.QtCore import pyqtSignature, QTimer, Qt, QSettings, QVariant
 from PyQt4.phonon import Phonon
-from hashlib import md5
+
 sys.path.append("Images")
 import pygame
 from pygame import midi
@@ -104,10 +114,13 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow):  # IGNORE:R0902+R0904
         self._setupActions()
         self.grabKeyboard()
         self._mimeTypes = set()
-        self._checkMusicType("Mp3", ["mp3"], ["audio/mp3",
-                                              "audio/mpeg3"])
-        self._checkMusicType("Mp4", ["m4a", "mp4"], ["audio/mp4",
-                                                     "audio/mp4a-latm"])
+        self._getAvailableMusicTypes()
+        self._buildTypeFilter()
+        self._updateRecent()
+#        for eff in Phonon.BackendCapabilities.availableAudioEffects():
+#            print eff.name()
+
+    def _buildTypeFilter(self):
         allExtensions = []
         for unusedName, extList in self._filterList:
             allExtensions.extend(extList)
@@ -117,9 +130,30 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow):  # IGNORE:R0902+R0904
                                 " ".join("*.%s" % ext for ext in extList))
                    for (name, extList) in self._filterList]
         self._filter = ";;".join(filters)
-        self._updateRecent()
-#        for eff in Phonon.BackendCapabilities.availableAudioEffects():
-#            print eff.name()
+
+    def _getAvailableMusicTypes(self):
+        availaibleMimeTypes = Phonon.BackendCapabilities.availableMimeTypes()
+        for mimeType in availaibleMimeTypes:
+            # Only keep audio mimetypes
+            if not "audio/" in mimeType:
+                continue
+            # Map mimetype to extension
+            extensions = mimetypes.guess_all_extensions(str(mimeType))
+            # Filter out mimetypes without extensions
+            if not extensions:
+                continue
+            # gnomevfs allows having nice human readable type descriptions
+            # but it is not available on all platforms
+            if gnomevfs:
+                name = gnomevfs.mime_get_description(str(mimeType))
+            else:
+                # Let's use the first returned extension as the filter name
+                name = extensions[0]
+            filter = []
+            for extension in extensions:
+                # We need to remove the leading dot in order to use the extension as a filter
+                filter.append(extension[1:])
+            self._filterList.append((name, filter))
 
     def _checkMusicType(self, name, extensions, mimeTypes):
         for mType in mimeTypes:
