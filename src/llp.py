@@ -1,4 +1,4 @@
-'''
+"""
 Created on 26 Jan 2012
 
 @author: Mike Thomas
@@ -18,15 +18,25 @@ Created on 26 Jan 2012
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 
 import sys
 import os
+from hashlib import md5
+import mimetypes
+
+# GnomeVFS is not available on all platforms
+try:
+    import gnomevfs
+except ImportError:
+    gnomevfs = False
+    pass
+
 from PyQt4.QtGui import (QApplication, QMainWindow, QDesktopServices,
                          QFileDialog, QIcon, QPixmap, QTransform, QMessageBox)
 from PyQt4.QtCore import pyqtSignature, QTimer, Qt, QSettings, QVariant
 from PyQt4.phonon import Phonon
-from hashlib import md5
+
 sys.path.append("Images")
 import pygame
 from pygame import midi
@@ -44,9 +54,10 @@ SPOOL_INTERVAL = 1
 MIN_ZOOM = 1
 MAX_ZOOM = 16
 
-class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
 
-    def __init__(self, parent = None):
+class LlpMainWindow(QMainWindow, Ui_LlpMainWindow):  # IGNORE:R0902+R0904
+
+    def __init__(self, parent=None):
         super(LlpMainWindow, self).__init__(parent)
         self.setupUi(self)
         # Setup instance variables
@@ -101,24 +112,47 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         self._tick(0)
         self._checkButtons()
         self._setupActions()
-        self.grabKeyboard()
         self._mimeTypes = set()
-        self._checkMusicType("Mp3", ["mp3"], ["audio/mp3",
-                                              "audio/mpeg3"])
-        self._checkMusicType("Mp4", ["m4a", "mp4"], ["audio/mp4",
-                                                     "audio/mp4a-latm"])
+        self._getAvailableMusicTypes()
+        self._buildTypeFilter()
+        self._updateRecent()
+#        for eff in Phonon.BackendCapabilities.availableAudioEffects():
+#            print eff.name()
+
+    def _buildTypeFilter(self):
         allExtensions = []
         for unusedName, extList in self._filterList:
             allExtensions.extend(extList)
-        self._filterList.insert(0, ("Any", ["*.*"]))
+        self._filterList.insert(0, ("Any", ["*"]))
         self._filterList.insert(0, ("Music files", allExtensions))
         filters = ["%s (%s)" % (name,
                                 " ".join("*.%s" % ext for ext in extList))
                    for (name, extList) in self._filterList]
         self._filter = ";;".join(filters)
-        self._updateRecent()
-#        for eff in Phonon.BackendCapabilities.availableAudioEffects():
-#            print eff.name()
+
+    def _getAvailableMusicTypes(self):
+        availaibleMimeTypes = Phonon.BackendCapabilities.availableMimeTypes()
+        for mimeType in availaibleMimeTypes:
+            # Only keep audio mimetypes
+            if not "audio/" in mimeType:
+                continue
+            # Map mimetype to extension
+            extensions = mimetypes.guess_all_extensions(str(mimeType))
+            # Filter out mimetypes without extensions
+            if not extensions:
+                continue
+            # gnomevfs allows having nice human readable type descriptions
+            # but it is not available on all platforms
+            if gnomevfs:
+                name = gnomevfs.mime_get_description(str(mimeType))
+            else:
+                # Let's use the first returned extension as the filter name
+                name = extensions[0]
+            filter = []
+            for extension in extensions:
+                # We need to remove the leading dot in order to use the extension as a filter
+                filter.append(extension[1:])
+            self._filterList.append((name, filter))
 
     def _checkMusicType(self, name, extensions, mimeTypes):
         for mType in mimeTypes:
@@ -161,8 +195,8 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
                                        "Set selection start",
                                        operations.SETBEGIN)
         self._controls.addSingleAction(self.actionPreviousMark,
-                                 "Go to previous mark",
-                                 operations.PREV)
+                                       "Go to previous mark",
+                                       operations.PREV)
         self._controls.addSingleAction(self.actionSetEnd, "Set selection end",
                                        operations.SETEND)
         self._controls.addSingleAction(self.actionNextMark, "Go to next mark",
@@ -170,8 +204,8 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         self._controls.addSingleAction(self.actionLoop, "Toggle looping",
                                        operations.LOOP)
         self._controls.addSingleAction(self.actionSelection,
-                                 "Toggle song/selection playback",
-                                 operations.SONG)
+                                       "Toggle song/selection playback",
+                                       operations.SONG)
         self._controls.addSingleAction(self.actionTrack,
                                        "Toggle playback tracking",
                                        operations.TRACK)
@@ -212,10 +246,10 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
             loc = QDesktopServices.MusicLocation
             directory = QDesktopServices.storageLocation(loc)
         caption = "Open a music file"
-        fname = QFileDialog.getOpenFileName(parent = self,
-                                            caption = caption,
-                                            directory = directory,
-                                            filter = self._filter)
+        fname = QFileDialog.getOpenFileName(parent=self,
+                                            caption=caption,
+                                            directory=directory,
+                                            filter=self._filter)
         if len(fname) == 0:
             return
         self._saveCurrentMarks()
@@ -228,7 +262,7 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         source = Phonon.MediaSource(fname)
         self._media.setCurrentSource(source)
         self._scene.newSong()
-        self._media.pause() # Makes sure tick signals are emitted
+        self._media.pause()  # Makes sure tick signals are emitted
         if self._currentSongHash in self._knownSongMarks:
             self._scene.loadMarksFromList(self._knownSongMarks[self._currentSongHash])
         self.setZoom(1)
@@ -257,7 +291,6 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
             self.recentFilesBox.setCurrentIndex(0)
         finally:
             self.recentFilesBox.blockSignals(False)
-
 
     @pyqtSignature("int")
     def on_recentFilesBox_currentIndexChanged(self, index):
@@ -292,7 +325,7 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
                                     eString)
             self._totalChanged(0)
 
-    def _checkButtons(self, state = None, ms = None):
+    def _checkButtons(self, state=None, ms=None):
         if state is None:
             state = self._media.state()
         if ms is None:
@@ -382,7 +415,6 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         self._media.pause()
         self._forwarding.start()
 
-
     def _forwarder(self):
         newPos = min(self._total, self._oldMs + self._spool)
         self._media.seek(newPos)
@@ -402,7 +434,7 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         else:
             self.positionIndicator.setText("%0*.2f" % (self._numDps, seconds))
         if ms < self._oldMs or ms == self._total or self._oldMs == 0:
-            self._checkButtons(ms = ms)
+            self._checkButtons(ms=ms)
         self._oldMs = ms
         self._scene.setCurrent(ms)
         self._doTracking()
@@ -448,10 +480,16 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         self.setZoom()
 
     def _changeTransform(self):
-        sx = (float(self._zoom * (self.markView.viewport().width()))
-              / self._scene.width())
+        if not self._scene.width() == 0:
+            sx = (float(self._zoom * (self.markView.viewport().width()))
+                  / self._scene.width())
+        else:
+            sx = 0
         height = self.markView.viewport().height() - 1
-        sy = float(height) / self._scene.height()
+        if not self._scene.height() == 0:
+            sy = float(height) / self._scene.height()
+        else:
+            sy = 0
         transform = QTransform(sx, 0, 0,
                                0, sy, 0,
                                0, 0, 1)
@@ -565,7 +603,7 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
                         - self.volumeSlider.pageStep() / 100.0)
         self._audio.setVolume(newVolume)
 
-    def setZoom(self, zoom = None):
+    def setZoom(self, zoom=None):
         if zoom is not None:
             self._zoom = zoom
             self._scene.setZoom(zoom)
@@ -601,7 +639,6 @@ class LlpMainWindow(QMainWindow, Ui_LlpMainWindow): #IGNORE:R0902+R0904
         self.zoomInButton.setEnabled(self._zoom < MAX_ZOOM)
         self.zoomOutButton.setEnabled(self._zoom > MIN_ZOOM)
         self.trackButton.setDisabled(self._zoom == 1)
-
 
     @pyqtSignature("")
     def on_actionPageUp_triggered(self):
@@ -715,6 +752,7 @@ def main():
     pygame.init()
     midi.init()
     mainWindow.show()
+    mainWindow.grabKeyboard()
     app.exec_()
 
 if __name__ == '__main__':

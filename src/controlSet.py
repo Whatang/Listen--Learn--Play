@@ -1,14 +1,15 @@
-'''
+"""
 Created on 27 Jan 2012
 
 @author: Mike Thomas
 
-'''
+"""
 
 from PyQt4.QtGui import QKeySequence
 import pickle
 from midiMessages import (MidiControlThread, MidiRecogniser,
                           MidiMessage, SysExMessage)
+
 
 class AbstractOperation(object):
     def __init__(self, opnum):
@@ -56,6 +57,7 @@ class ActionPair(AbstractOperation):
     def numActions(cls):
         return 2
 
+
 class PairedMidi(object):
     def __init__(self, midiOn, midiOff):
         self.midiOn = midiOn
@@ -63,6 +65,7 @@ class PairedMidi(object):
 
     def unparamString(self):
         return self.midiOn.unparamString() + "/" + self.midiOff.unparamString()
+
 
 class ParameterAction(AbstractOperation):
     def __init__(self, method, outputMin, outputMax, opnum):
@@ -95,15 +98,14 @@ class ParameterAction(AbstractOperation):
 
 
 class ControlSet(object):
-    '''
+    """
     classdocs
-    '''
+    """
 
-
-    def __init__(self, midiDevice = -1):
-        '''
+    def __init__(self, midiDevice=-1):
+        """
         Constructor
-        '''
+        """
         self.midiDevice = midiDevice
         self._midiThread = None
         self._midiRecogniser = MidiRecogniser()
@@ -206,7 +208,6 @@ class ControlSet(object):
                 self._midiRecogniser.addMessageTarget(midiData.midiOff,
                                                       action.actionOff)
 
-
     def openMidiDevice(self, deviceId):
         self.midiDevice = deviceId
         if self._midiThread is not None:
@@ -229,7 +230,7 @@ class ControlSet(object):
         else:
             target.trigger()
 
-    def save(self, handle, midiDict = None):
+    def save(self, handle, midiDict=None):
         if midiDict is None:
             midiDict = self._midi
         for action in self.iterActions():

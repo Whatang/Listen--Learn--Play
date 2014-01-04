@@ -1,17 +1,18 @@
-'''
+"""
 Created on 28 Jan 2012
 
 @author: Mike Thomas
 
-'''
+"""
 
 from PyQt4.QtGui import QDialog
 from ui_midiLearnDialog import Ui_midiLearnDialog
 
 from midiMessages import MidiControlThread
 
+
 class MidiLearnDialog(QDialog, Ui_midiLearnDialog):
-    def __init__(self, deviceId, parent = None):
+    def __init__(self, deviceId, parent=None):
         super(MidiLearnDialog, self).__init__(parent)
         self.setupUi(self)
         self.thread = MidiControlThread(deviceId)
